@@ -374,7 +374,12 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// サウンド初期化
 	//------------------------------------
-	InitSound( hWnd );
+	if ( InitSound( hWnd )/* || InitSound( hWnd ) == E_FAIL || InitSound( hWnd ) == S_FALSE*/ )
+	{
+		DestroyWindow( hWnd );		// ウインドウを閉じる関数
+
+		return E_FAIL;
+	}
 
 	// 入力処理初期化処理
 	//------------------------------------
