@@ -148,7 +148,7 @@ void SetupMeshField(int numX, int numZ, float fWidth, float fHeight)
 		for (nCntX = 0; nCntX < (numX + 1); nCntX++)
 		{
 			// ’¸“_À•W
-			pVtx[g_nNumVtx].pos = D3DXVECTOR3( ( fStartX + (nCntX * fWidth) ), 0.0f, ( fStartZ - (nCntZ * fHeight)));
+			pVtx[g_nNumVtx].pos = D3DXVECTOR3( ( fStartX + (nCntX * fWidth) ), 0.0f, ( fStartZ - (nCntZ * fHeight) - 700.0f));
 
 			// –@ü
 			pVtx[g_nNumVtx].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);

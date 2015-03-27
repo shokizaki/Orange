@@ -8,6 +8,7 @@
 #include "gear.h"
 #include "camera.h"
 #include "player.h"
+#include "sheet.h"
 
 //------ マクロ定義 ------
 #define GEAR_WIDTH ( 15.0f )
@@ -60,6 +61,24 @@ void InitGear( void )
 	g_nMoveGear = 0;
 	g_nCreateGearNum = 0;
 	g_bGearSelect = false;
+
+	// 位置読み込み処理開始	
+	FILE *fp = fopen( "GearPos.txt", "rt" );
+	char strWork[ 256 ];
+	D3DXVECTOR3 fWork;
+
+	// ファイルの読み込み開始
+	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
+	{
+		// 一行読み込む
+		fscanf( fp, "%s = %f %f %f" , strWork, &fWork.x, &fWork.y, &fWork.z );
+
+		if ( strcmp( strWork, "POS" ) == 0 )
+		{
+			// 白キューブ生成
+			SetGear( fWork );
+		}
+	}
 }
 
 //-----------------------------------------------
@@ -165,7 +184,7 @@ void DrawGear( void )
 	SetCamera();
 
 	// シートが張られてたら
-	if ( GetRed() == true )
+	//if ( GetSheet() == true )
 	{
 		// それぞれのパーツの行列計算と描画開始
 		for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
@@ -208,7 +227,7 @@ void DrawGear( void )
 				for (int nCntMat = 0; nCntMat < (int)g_aGear[ nCnt ].numMatModel; nCntMat++)
 				{
 					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-					pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+					pDevice ->SetTexture( 0, g_aGear[ nCnt ].pTexture );							// テクスチャのセット
 					g_aGear[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
 				}
 			
@@ -245,9 +264,7 @@ int SetGear( D3DXVECTOR3 pos )
 			g_aGear[ i ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 			// 当たり判定用
-			g_aGear[ i ].rect.pos.x = pos.x;
-			g_aGear[ i ].rect.pos.y = pos.y - 20.0f;
-			g_aGear[ i ].rect.pos.z = pos.z;
+			g_aGear[ i ].rect.pos = pos;
 			g_aGear[ i ].rect.harfSize = D3DXVECTOR3( GEAR_WIDTH, GEAR_HEIGHT, GEAR_HEIGHT );
 
 			// モデル情報をコピー
@@ -258,15 +275,19 @@ int SetGear( D3DXVECTOR3 pos )
 			{
 				// xファイルの読み込み
 				//------------------------------------
-				D3DXLoadMeshFromX("data/MODEL/gear.x",		// 読み込むファイル名
-								  D3DXMESH_SYSTEMMEM,							// 
-								  pDevice,										// 
-								  NULL,											// 
-								  &g_aGear[ i ].pBuffMatModel,			// 
-								  NULL,											// 
-								  &g_aGear[ i ].numMatModel,			// 
+				D3DXLoadMeshFromX("data/MODEL/Block_Nor.x",		// 読み込むファイル名
+								  D3DXMESH_SYSTEMMEM,			// 
+								  pDevice,						// 
+								  NULL,							// 
+								  &g_aGear[ i ].pBuffMatModel,	// 
+								  NULL,							// 
+								  &g_aGear[ i ].numMatModel,	// 
 								  &g_aGear[ i ].pMeshModel );
 			}
+
+			// テクスチャの読み込み
+			//------------------------------------
+			D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Block.jpg", &g_aGear[ i ].pTexture);
 
 			// 回転フラグ
 			g_aGear[ i ].bRotation = false;
@@ -295,7 +316,7 @@ void EditGear( void )
 		g_aGear[ g_nMoveGear ].rot.y = 0.0f;
 
 		// 歯車の生成
-		g_nMoveGear = SetGear( D3DXVECTOR3( 0.0f, 20.0f, 0.0f ) );
+		g_nMoveGear = SetGear( D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) );
 	}
 
 	//if ( g_bMoveGear == true )
@@ -318,9 +339,7 @@ void EditGear( void )
 			g_aGear[ g_nMoveGear ].pos.y += -40.0f;
 		}
 
-		g_aGear[ g_nMoveGear ].rect.pos.x = g_aGear[ g_nMoveGear ].pos.x;
-		g_aGear[ g_nMoveGear ].rect.pos.y = g_aGear[ g_nMoveGear ].pos.y - 20.0f;
-		g_aGear[ g_nMoveGear ].rect.pos.z = g_aGear[ g_nMoveGear ].pos.z;
+		g_aGear[ g_nMoveGear ].rect.pos = g_aGear[ g_nMoveGear ].pos;
 		g_aGear[ g_nMoveGear ].rot.y += 0.025f;
 	}
 
@@ -360,6 +379,7 @@ void EditGear( void )
 		for ( int i = g_nMoveGear; i < g_nCreateGearNum; i++ )
 		{
 			g_aGear[ i ].pos = g_aGear[ i + 1 ].pos;
+			g_aGear[ i ].rect.pos = g_aGear[ i + 1 ].pos;
 		}
 
 		g_aGear[ g_nCreateGearNum ].bUse = false;

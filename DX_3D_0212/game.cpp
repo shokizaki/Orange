@@ -19,6 +19,9 @@
 #include "gear.h"
 #include "Edit.h"
 #include "pause.h"
+#include "billboard.h"
+#include "sheet.h"
+#include "background.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -45,6 +48,12 @@ void InitGame()
 	// 
 	//InitEdit();
 
+	// ビルボード初期化
+	InitBillboard();
+
+	// 背景初期化
+	InitBackGround();
+
 	// 白キューブ初期化
 	InitCube();
 
@@ -61,13 +70,16 @@ void InitGame()
 	InitPlayer();
 
 	// メッシュフィールド初期化
-	InitMeshField( 5, 5, 200.0f, 200.0f );
+	InitMeshField( 20, 10, 200.0f, 200.0f );
 
 	// ライト初期化
 	InitLight();
 
 	// ポーズ初期化
 	InitPause();
+
+	// シート初期化
+	InitSheet();
 
 	// メニューの初期化
 	//------------------------------------
@@ -105,6 +117,15 @@ void UninitGame()
 
 	// ポーズ終了
 	UninitPause();
+
+	// ビルボード初期化
+	UninitBillboard();
+
+	// シート終了
+	UninitSheet();
+
+	// 背景初期化
+	UninitBackGround();
 	
 	// メニューの終了
 	//------------------------------------
@@ -157,9 +178,18 @@ void UpdateGame()
 	//------------------------------------
 	UpdatePlayer();
 
+	// ビルボード初期化
+	UpdateBillboard();
+
 	// ライトの更新
 	//------------------------------------
 	UpdateLight();
+
+	// シート更新
+	UpdateSheet();
+
+	// 背景初期化
+	UpdateBackGround();
 
 	// 遷移判定
 	if ( ( GetKeyboardTrigger( DIK_RSHIFT ) == true || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
@@ -172,6 +202,9 @@ void UpdateGame()
 // ゲーム描画処理
 void DrawGame()
 {
+	// 背景初期化
+	DrawBackGround();
+
 	// エディット描画
 	DrawEdit();
 
@@ -195,6 +228,12 @@ void DrawGame()
 	// ライトの描画
 	//------------------------------------
 	DrawLight();
+
+	// ビルボード初期化
+	DrawBillboard();
+
+	// シート描画
+	DrawSheet();
 
 	// UIの初期化
 	//------------------------------------

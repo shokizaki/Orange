@@ -132,6 +132,8 @@ void UpdateCamera(void)
 
 		g_camera.posCameraP.x = pPosPlayer.x;
 		g_camera.posCameraP.y = pPosPlayer.y + 100.0f;
+		
+		g_camera.posCameraR.y = pPosPlayer.y + 100.0f;
 
 		// ˆÚ“®‚µ‚½Œ‹‰Ê‚ğ’‹“_‚É”½‰f
 		g_camera.posCameraR.x = g_camera.posCameraP.x + sinf(-g_camera.rotCamera.y) * g_camera.fLengthIntervalCamera;

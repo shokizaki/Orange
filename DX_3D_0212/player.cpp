@@ -12,12 +12,14 @@
 #include "Edit.h"
 #include "gear.h"
 #include "moveCube.h"
+#include "billboard.h"
+#include "sheet.h"
 
 //------ マクロ定義 ------
 #define PLAYER_WIDTH ( 20.0f )
 #define PLAYER_HEIGHT ( 20.0f )
-#define PLAYER_POS_X ( 0.0f )
-#define PLAYER_POS_Y ( 30.0f )
+#define PLAYER_POS_X ( -200.0f )
+#define PLAYER_POS_Y ( 40.0f )
 #define PLAYER_POS_Z ( 0.0f )
 
 #define MOVE_VAL ( 3.0f )
@@ -45,8 +47,6 @@ bool g_bJump = false;		// ジャンプ中？
 bool g_bDirect = true;		// 向き
 	
 bool g_bColorChange = false;
-
-bool g_bRed= false;
 
 //------ 内部関数宣言 ------
 
@@ -98,8 +98,6 @@ void InitPlayer( void )
 	g_bDirect = true;
 	g_bJump = false;
 	g_bColorChange = false;
-
-	g_bRed= false;
 }
 
 //-----------------------------------------------
@@ -122,6 +120,17 @@ void UninitPlayer( void )
 		pBuffMatModelPlayer ->Release();
 		pBuffMatModelPlayer = NULL;
 	}
+
+	// 使ったテクスチャの解放と初期化
+	//------------------------------------
+	//for (int nCnt = 0; nCnt < TEXTURE_MAX; nCnt++)
+	{
+		if (g_pTexturePlayer[ 0 ] != NULL)
+		{ 
+			g_pTexturePlayer[ 0 ] ->Release();
+			g_pTexturePlayer[ 0 ] = NULL;
+		}
+	}
 }
 
 //-----------------------------------------------
@@ -142,38 +151,39 @@ void UpdatePlayer( void )
 		g_bColorChange = false;
 
 		// デバッグ（赤シート）
-		if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && g_bRed == false )
+		/*if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && GetSheet() == false )
 		{
-			g_bRed = true;
+			GetSheet() = true;
 		}
-		else if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && g_bRed == true )
+		else if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && GetSheet() == true )
 		{
-			g_bRed = false;
-		}
+			GetSheet() = false;
+		}*/
 
 		// 重力をかける
 		fJumpVal += GRAVITY_VAL;
 		posPlayer.y -= fJumpVal;
 		rectPlayer.pos.y = posPlayer.y;
 
-		// キューブとの当たり判定
-		for ( int i = 0; i < CUBE_MAX; i++ )
+		// 歯車との当たり判定
+		for ( int i = 0; i < GEAR_MAX; i++ )
 		{
-			if ( ( pCube + i ) ->bUse == true )
+			if ( ( pGear + i ) ->bUse == true )
 			{
-				if ( ColRectXY( &rectPlayer, &( pCube + i ) ->rect ) == true )
+				if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
 				{
-					posPlayer.y = posPlayerOld.y;
-					rectPlayer.pos.y = posPlayer.y;
-					fJumpVal = 0.0f;
-					g_bJump = false;
-
-					g_nCubeIndex = i;
+					//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
+					{
+						posPlayer.y = posPlayerOld.y;
+						rectPlayer.pos.y = posPlayer.y;
+						fJumpVal = 0.0f;
+						g_bJump = false;
+					}
 				}
 			}
 		}
 
-		if ( g_bRed == false )
+		if ( GetSheet() == false )
 		{
 			// 赤キューブとの当たり判定
 			for ( int i = 0; i < MOVECUBE_MAX; i++ )
@@ -194,20 +204,19 @@ void UpdatePlayer( void )
 		}
 		else
 		{
-			// 歯車との当たり判定
-			for ( int i = 0; i < GEAR_MAX; i++ )
+			// キューブとの当たり判定
+			for ( int i = 0; i < CUBE_MAX; i++ )
 			{
-				if ( ( pGear + i ) ->bUse == true )
+				if ( ( pCube + i ) ->bUse == true )
 				{
-					if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
+					if ( ColRectXY( &rectPlayer, &( pCube + i ) ->rect ) == true )
 					{
-						//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
-						{
-							posPlayer.y = posPlayerOld.y;
-							rectPlayer.pos.y = posPlayer.y;
-							fJumpVal = 0.0f;
-							g_bJump = false;
-						}
+						posPlayer.y = posPlayerOld.y;
+						rectPlayer.pos.y = posPlayer.y;
+						fJumpVal = 0.0f;
+						g_bJump = false;
+
+						g_nCubeIndex = i;
 					}
 				}
 			}
@@ -269,20 +278,23 @@ void UpdatePlayer( void )
 			}
 		}*/
 
-		// キューブとの当たり判定
-		for ( int i = 0; i < CUBE_MAX; i++ )
+		// 歯車との当たり判定
+		for ( int i = 0; i < GEAR_MAX; i++ )
 		{
-			if ( ( pCube + i ) ->bUse == true )
+			if ( ( pGear + i ) ->bUse == true )
 			{
-				if ( ColRectXY( &rectPlayer, &( pCube + i ) ->rect ) == true )
+				if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
 				{
-					posPlayer.x = posPlayerOld.x;
-					rectPlayer.pos.x = posPlayer.x;
+					//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
+					{
+						posPlayer.x = posPlayerOld.x;
+						rectPlayer.pos.x = posPlayer.x;
+					}
 				}
 			}
 		}
 
-		if ( g_bRed == false )
+		if ( GetSheet() == false )
 		{
 			// 赤キューブとの当たり判定
 			for ( int i = 0; i < MOVECUBE_MAX; i++ )
@@ -299,18 +311,15 @@ void UpdatePlayer( void )
 		}
 		else
 		{
-			// 歯車との当たり判定
-			for ( int i = 0; i < GEAR_MAX; i++ )
+			// キューブとの当たり判定
+			for ( int i = 0; i < CUBE_MAX; i++ )
 			{
-				if ( ( pGear + i ) ->bUse == true )
+				if ( ( pCube + i ) ->bUse == true )
 				{
-					if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
+					if ( ColRectXY( &rectPlayer, &( pCube + i ) ->rect ) == true )
 					{
-						//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
-						{
-							posPlayer.x = posPlayerOld.x;
-							rectPlayer.pos.x = posPlayer.x;
-						}
+						posPlayer.x = posPlayerOld.x;
+						rectPlayer.pos.x = posPlayer.x;
 					}
 				}
 			}
@@ -330,73 +339,85 @@ void UpdatePlayer( void )
 			rectPlayer.pos = posPlayer;
 		}
 
-
-
 		// 色を変える処理
 		if ( GetPadElecomTrigger( PAD_4 ) == true || GetKeyboardTrigger( DIK_RETURN ) == true )
 		{
-			// 赤キューブとの当たり判定
-			for ( int i = 0; i < MOVECUBE_MAX; i++ )
+			if ( GetSheet() == false )
 			{
-				if ( ( pMoveCube + i ) ->bUse == true )
+				// 赤キューブとの当たり判定
+				for ( int i = 0; i < MOVECUBE_MAX; i++ )
 				{
-					if ( g_bDirect == true )
+					if ( ( pMoveCube + i ) ->bUse == true )
 					{
-						// 作業用変数
-						COL_RECT work;
-
-						// 現在の状態を保存
-						work = rectPlayer;
-
-						if ( GetGamePadCrossKeyY() < 0 )
+						if ( g_bDirect == true )
 						{
-							work.pos.y -= 10.0f;
+							// 作業用変数
+							COL_RECT work;
+
+							// 現在の状態を保存
+							work = rectPlayer;
+
+							if ( GetKeyboardTrigger( DIK_S ) == true )
+							{
+								work.pos.y += 10.0f;
+							}
+							else
+							{
+								work.pos.x += 10.0f;
+							}
+
+							if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
+							{
+								// 白キューブの生成
+								SetCube( ( pMoveCube + i ) ->pos );
+
+								SetBillboard( ( pMoveCube + i ) ->pos, 20.0f, 20.0f, TEXTURETYPE_GREEN );
+							
+								// 赤キューブをなくす
+								( pMoveCube + i ) ->bUse = false;
+
+								g_bColorChange = true;
+
+								break;	// ループを抜ける
+							}
 						}
 						else
 						{
-							work.pos.x += 10.0f;
+							// 作業用変数
+							COL_RECT work;
+
+							// 現在の状態を保存
+							work = rectPlayer;
+
+							if ( GetKeyboardTrigger( DIK_S ) == true )
+							{
+								work.pos.y += 10.0f;
+							}
+							else
+							{
+								work.pos.x += 10.0f;
+							}
+							
+							if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
+							{
+								// 白キューブの生成
+								SetCube( ( pMoveCube + i ) ->pos );
+								
+								SetBillboard( ( pMoveCube + i ) ->pos, 20.0f, 20.0f, TEXTURETYPE_GREEN );
+
+								// 赤キューブをなくす
+								( pMoveCube + i ) ->bUse = false;
+
+								g_bColorChange = true;
+
+								break;	// ループを抜ける
+							}						
 						}
-
-						if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
-						{
-							// 白キューブの生成
-							SetCube( ( pMoveCube + i ) ->pos );
-							
-							// 赤キューブをなくす
-							( pMoveCube + i ) ->bUse = false;
-
-							g_bColorChange = true;
-
-							break;	// ループを抜ける
-						}
-					}
-					else
-					{
-						// 作業用変数
-						COL_RECT work;
-
-						// 現在の状態を保存
-						work = rectPlayer;
-
-						work.pos.x -= 10.0f;
-							
-						if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
-						{
-							// 白キューブの生成
-							SetCube( ( pMoveCube + i ) ->pos );
-							
-							// 赤キューブをなくす
-							( pMoveCube + i ) ->bUse = false;
-
-							g_bColorChange = true;
-
-							break;	// ループを抜ける
-						}						
 					}
 				}
 			}
 
-			if ( g_bColorChange == false )
+			else //if ( GetSheet() == true )
 			{
 				// 白キューブとの当たり判定
 				for ( int i = 0; i < CUBE_MAX; i++ )
@@ -411,12 +432,21 @@ void UpdatePlayer( void )
 							// 現在の状態を保存
 							work = rectPlayer;
 
-							work.pos.x += 10.0f;
+							if ( GetKeyboardTrigger( DIK_S ) == true )
+							{
+								work.pos.y += 10.0f;
+							}
+							else
+							{
+								work.pos.x += 10.0f;
+							}
 							
 							if ( ColRectXY( &work, &( pCube + i ) ->rect ) == true )
 							{
 								// 赤キューブの生成
 								SetMoveCube( ( pCube + i ) ->pos );
+
+								SetBillboard( ( pCube + i ) ->pos, 20.0f, 20.0f, TEXTURETYPE_RED );
 							
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
@@ -432,12 +462,21 @@ void UpdatePlayer( void )
 							// 現在の状態を保存
 							work = rectPlayer;
 
-							work.pos.x -= 10.0f;
+							if ( GetKeyboardTrigger( DIK_S ) == true )
+							{
+								work.pos.y += 10.0f;
+							}
+							else
+							{
+								work.pos.x -= 10.0f;
+							}
 							
 							if ( ColRectXY( &work, &( pCube + i ) ->rect ) == true )
 							{
 								// 赤キューブの生成
 								SetMoveCube( ( pCube + i ) ->pos );
+
+								SetBillboard( ( pCube + i ) ->pos, 20.0f, 20.0f, TEXTURETYPE_RED );
 							
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
@@ -535,5 +574,5 @@ D3DXVECTOR3 GetPlayerPos( void )
 // デバッグ用
 bool GetRed( void )
 {
-	return g_bRed;
+	return GetSheet();
 }

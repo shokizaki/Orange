@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "gear.h"
 #include "player.h"
+#include "sheet.h"
 
 //------ マクロ定義 ------
 #define MOVECUBE_WIDTH ( 15.0f )
@@ -175,7 +176,7 @@ void DrawMoveCube( void )
 	// カメラのセット
 	SetCamera();
 
-	if ( GetRed() == false )
+	if ( GetSheet() == false )
 	{
 		// それぞれのパーツの行列計算と描画開始
 		for (int nCnt = 0; nCnt < MOVECUBE_MAX; nCnt++)
@@ -218,7 +219,7 @@ void DrawMoveCube( void )
 				for (int nCntMat = 0; nCntMat < (int)g_aMoveCube[ nCnt ].numMatModel; nCntMat++)
 				{
 					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-					pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+					pDevice ->SetTexture( 0, g_aMoveCube[ nCnt ].pTexture );							// テクスチャのセット
 					g_aMoveCube[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
 				}
 			
@@ -270,7 +271,7 @@ int SetMoveCube( D3DXVECTOR3 pos )
 			{
 				// xファイルの読み込み
 				//------------------------------------
-				D3DXLoadMeshFromX("data/MODEL/cubeRed.x",		// 読み込むファイル名
+				D3DXLoadMeshFromX("data/MODEL/Block_Red.x",		// 読み込むファイル名
 								  D3DXMESH_SYSTEMMEM,							// 
 								  pDevice,										// 
 								  NULL,											// 
@@ -279,6 +280,10 @@ int SetMoveCube( D3DXVECTOR3 pos )
 								  &g_aMoveCube[ i ].numMatModel,			// 
 								  &g_aMoveCube[ i ].pMeshModel );
 			}
+
+			// テクスチャの読み込み
+			//------------------------------------
+			D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Block.jpg", &g_aMoveCube[ i ].pTexture);
 
 			g_aMoveCube[ i ].bUse = true;
 			
@@ -367,6 +372,7 @@ void EditMoveCube( void )
 		for ( int i = g_nMoveMoveCube; i < g_nCreateMoveCubeNum; i++ )
 		{
 			g_aMoveCube[ i ].pos = g_aMoveCube[ i + 1 ].pos;
+			g_aMoveCube[ i ].rect.pos = g_aMoveCube[ i + 1 ].pos;
 		}
 
 		g_aMoveCube[ g_nCreateMoveCubeNum ].bUse = false;

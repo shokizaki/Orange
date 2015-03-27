@@ -35,6 +35,7 @@ typedef struct
 	LPD3DXMESH pMeshModel;			// メッシュ情報へのポインタ
 	LPD3DXBUFFER pBuffMatModel;		// マテリアル情報へのポインタ
 	DWORD numMatModel;				// マテリアルの数
+	LPDIRECT3DTEXTURE9	pTexture; 		// テクスチャへのポインタ
 
 	COL_RECT rect;
 

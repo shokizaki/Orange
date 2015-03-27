@@ -7,6 +7,8 @@
 //------ インクルードファイル ------
 #include "cube.h"
 #include "camera.h"
+#include "player.h"
+#include "sheet.h"
 
 //------ マクロ定義 ------
 #define CUBE_WIDTH ( 15.0f )
@@ -135,7 +137,7 @@ void UpdateCube( void )
 		//}
 
 		// 移動処理（デバッグ用）
-		if ( g_aCube[ 0 ].bUse == true )
+		/*if ( g_aCube[ 0 ].bUse == true )
 		{
 			if ( GetKeyboardPress( DIK_I ) == true )
 			{
@@ -161,7 +163,7 @@ void UpdateCube( void )
 				g_aCube[ 0 ].pos.x += g_aCube[ 0 ].move.x;
 				g_aCube[ 0 ].rect.pos = g_aCube[ 0 ].pos;	
 			}
-		}
+		}*/
 	}
 }
 
@@ -184,54 +186,58 @@ void DrawCube( void )
 	// カメラのセット
 	SetCamera();
 
-	// それぞれのパーツの行列計算と描画開始
-	for (int nCnt = 0; nCnt < CUBE_MAX; nCnt++)
+	// シートが張られてたら
+	if ( GetSheet() == true )
 	{
-		if ( g_aCube[ nCnt ].bUse == true )
+		// それぞれのパーツの行列計算と描画開始
+		for (int nCnt = 0; nCnt < CUBE_MAX; nCnt++)
 		{
-			D3DXMatrixIdentity( &g_aCube[ nCnt ].mtxWorld );	// フォーマットの初期化
-			D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
-
-			// スケールを反映
-			D3DXMatrixScaling(&mtxScl, g_aCube[ nCnt ].scl.x, g_aCube[ nCnt ].scl.y, g_aCube[ nCnt ].scl.z);
-			D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxScl);
-
-			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aCube[ nCnt ].rot.y, g_aCube[ nCnt ].rot.x, g_aCube[ nCnt ].rot.z);
-			D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxRot);
-
-			// 位置を反映
-			D3DXMatrixTranslation(&mtxTranslate, g_aCube[ nCnt ].pos.x, g_aCube[ nCnt ].pos.y, g_aCube[ nCnt ].pos.z);
-			D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxTranslate);
-
-			// 設定
-			pDevice ->SetTransform(D3DTS_WORLD, &g_aCube[ nCnt ].mtxWorld);
-
-			// 現在のマテリアル情報を保存
-			pDevice ->GetMaterial( &matDef );
-
-			// バッファへのポインタを取得
-			pMat = (D3DXMATERIAL*)g_aCube[ nCnt ].pBuffMatModel ->GetBufferPointer();
-
-			/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
-
-			strcat(strDest, strSrc);
-
-			D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
-			
-			// マテリアルの数だけループ
-			for (int nCntMat = 0; nCntMat < (int)g_aCube[ nCnt ].numMatModel; nCntMat++)
+			if ( g_aCube[ nCnt ].bUse == true )
 			{
-				pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-				pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
-				g_aCube[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
-			}
+				D3DXMatrixIdentity( &g_aCube[ nCnt ].mtxWorld );	// フォーマットの初期化
+				D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
+
+				// スケールを反映
+				D3DXMatrixScaling(&mtxScl, g_aCube[ nCnt ].scl.x, g_aCube[ nCnt ].scl.y, g_aCube[ nCnt ].scl.z);
+				D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxScl);
+
+				// 向きを反映
+				D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aCube[ nCnt ].rot.y, g_aCube[ nCnt ].rot.x, g_aCube[ nCnt ].rot.z);
+				D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxRot);
+
+				// 位置を反映
+				D3DXMatrixTranslation(&mtxTranslate, g_aCube[ nCnt ].pos.x, g_aCube[ nCnt ].pos.y, g_aCube[ nCnt ].pos.z);
+				D3DXMatrixMultiply(&g_aCube[ nCnt ].mtxWorld, &g_aCube[ nCnt ].mtxWorld, &mtxTranslate);
+
+				// 設定
+				pDevice ->SetTransform(D3DTS_WORLD, &g_aCube[ nCnt ].mtxWorld);
+
+				// 現在のマテリアル情報を保存
+				pDevice ->GetMaterial( &matDef );
+
+				// バッファへのポインタを取得
+				pMat = (D3DXMATERIAL*)g_aCube[ nCnt ].pBuffMatModel ->GetBufferPointer();
+
+				/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
+
+				strcat(strDest, strSrc);
+
+				D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
 			
-			// マテリアルを元に戻す
-			//------------------------------------
-			pDevice ->SetMaterial( &matDef );
+				// マテリアルの数だけループ
+				for (int nCntMat = 0; nCntMat < (int)g_aCube[ nCnt ].numMatModel; nCntMat++)
+				{
+					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
+					pDevice ->SetTexture( 0, g_aCube[ nCnt ].pTexture );							// テクスチャのセット
+					g_aCube[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
+				}
+			
+				// マテリアルを元に戻す
+				//------------------------------------
+				pDevice ->SetMaterial( &matDef );
+			}
 		}
 	}
 }
@@ -272,7 +278,7 @@ int SetCube( D3DXVECTOR3 pos )
 			{
 				// xファイルの読み込み
 				//------------------------------------
-				D3DXLoadMeshFromX("data/MODEL/cube.x",		// 読み込むファイル名
+				D3DXLoadMeshFromX("data/MODEL/Block_Gre.x",		// 読み込むファイル名
 								  D3DXMESH_SYSTEMMEM,							// 
 								  pDevice,										// 
 								  NULL,											// 
@@ -281,6 +287,10 @@ int SetCube( D3DXVECTOR3 pos )
 								  &g_aCube[ i ].numMatModel,			// 
 								  &g_aCube[ i ].pMeshModel );
 			}
+
+			// テクスチャの読み込み
+			//------------------------------------
+			D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Block.jpg", &g_aCube[ i ].pTexture);
 
 			g_aCube[ i ].bUse = true;
 			
