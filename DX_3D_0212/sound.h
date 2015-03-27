@@ -25,6 +25,11 @@ typedef enum
 	MENUON_SE,			// メニューONSE
 	CURSOR_SE,			// カーソルSE
 
+    TITLE_BGM,
+    GAME_BGM,
+    RESULT_BGM,
+    RANKING_BGM,
+
 	SOUND_LABEL_MAX,
 } SOUND_LABEL;
 

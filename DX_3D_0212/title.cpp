@@ -48,7 +48,7 @@ bool g_bTitleFade = false;
 void InitTitle()
 {
     // BGM
-	//PlaySound( TITLE_BGM );
+	PlaySound( TITLE_BGM );
 
 	// デバイス取得
 	//------------------------------------
@@ -124,7 +124,7 @@ void UninitTitle()
     UninitTitlePreBtn();
 
     // BGM
-	//StopSound();
+	StopSound();
 
     // テクスチャバッファの解放
     if( g_Title.tex != NULL )
