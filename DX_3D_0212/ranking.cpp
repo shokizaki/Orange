@@ -12,6 +12,7 @@
 #include "main.h"
 #include "ranking.h"
 #include "timer.h"
+#include "RankingBG.h"
 
 /*******************************************************************************
 グローバル変数宣言
@@ -267,6 +268,7 @@ int InitRanking(void){
 		g_pVtxBuffRankingPolygon->Unlock();
 	}
 
+    InitRankingBG();
 
     return S_OK;
 }
@@ -278,6 +280,8 @@ void UninitRanking(void){
 
     // BGM
     StopSound();
+
+    UninitRankingBG();
 
 	//テクスチャポインタの廃棄
 	for (int i = 0; i < RANKINGPOLYGON_TEXTURE; i++){
@@ -298,7 +302,10 @@ void UninitRanking(void){
 ランキングの更新処理
 *******************************************************************************/
 void UpdateRanking(void){
-		// エンターを押したら
+
+    UpdateRankingBG();
+
+	// エンターを押したら
 	//------------------------------------
 	// 遷移判定
 	if ( ( GetKeyboardTrigger(DIK_RETURN) /*|| GetGamePadTrigger( GAMEPAD_START ) || GetGamePadTrigger( GAMEPAD_A )*/ || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
@@ -316,6 +323,8 @@ void UpdateRanking(void){
 *******************************************************************************/
 void DrawRanking(void)
 {
+    DrawRankingBG();
+
 	LPDIRECT3DDEVICE9 pDevice;		//デバイスポインタ
 	int PrimitiveVertex = 0;
 

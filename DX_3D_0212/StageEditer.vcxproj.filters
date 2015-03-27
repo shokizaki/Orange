@@ -29,6 +29,7 @@
     <ClCompile Include="ranking.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="goal.cpp" />
+    <ClCompile Include="RankingBG.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="background.h" />
@@ -59,5 +60,6 @@
     <ClInclude Include="ranking.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="goal.h" />
+    <ClInclude Include="RankingBG.h" />
   </ItemGroup>
 </Project>
