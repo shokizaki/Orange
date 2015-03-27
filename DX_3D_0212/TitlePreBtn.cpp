@@ -27,8 +27,10 @@
 
 typedef struct tagTITLEPREBTN
 {
-    LPDIRECT3DVERTEXBUFFER9 vtx;    // 頂点バッファ
-    LPDIRECT3DTEXTURE9      tex;    // テクスチャ
+    LPDIRECT3DVERTEXBUFFER9 vtx;        // 頂点バッファ
+    LPDIRECT3DTEXTURE9      tex;        // テクスチャ
+    float                   fAlpha;     // 点滅用：アルファ加速値
+    D3DXCOLOR               col;        // 色
 }TITLEPREBTN;
 
 /*--- プロトタイプ宣言 --------------------------------------------------*/
@@ -48,9 +50,14 @@ TITLEPREBTN g_TitlePreBtn;
 *------------------------------------------------------------------------*/
 VOID InitTitlePreBtn( VOID )
 {
-	// デバイス取得
-	//------------------------------------
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+    // アルファ加速値
+    g_TitlePreBtn.fAlpha = 0.0f;
+
+    // 現在のアルファ値
+    g_TitlePreBtn.col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 0.0f );
+
+    // デバイス取得
+    LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	pDevice ->CreateVertexBuffer((sizeof( VERTEX_2D ) * 4),	// 頂点データ用に確保するバッファ
 								 D3DUSAGE_WRITEONLY,				// 頂点バッファの使用方法
@@ -87,10 +94,11 @@ VOID InitTitlePreBtn( VOID )
         pVtx[ 3 ].rhw = 1.0f;
 
         // 色
-        pVtx[ 0 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			// 頂点ごとの色の設定
-        pVtx[ 1 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
-        pVtx[ 2 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
-        pVtx[ 3 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
+        pVtx[ 0 ].col
+            =  pVtx[ 1 ].col
+            = pVtx[ 2 ].col
+            = pVtx[ 3 ].col
+            = g_TitlePreBtn.col;
 
         // テクスチャ
         pVtx[ 0 ].tex = D3DXVECTOR2( 0.0f, 0.0f );
@@ -141,6 +149,27 @@ VOID UninitTitlePreBtn( VOID )
 *------------------------------------------------------------------------*/
 VOID UpdateTitlePreBtn( VOID )
 {
+    if( GetFade() == FADE_OUT )
+    {
+        g_TitlePreBtn.fAlpha += ( 1.0f - g_TitlePreBtn.col.a ) * 0.15f;
+    }
+    else
+    {
+        g_TitlePreBtn.fAlpha += ( 1.0f - g_TitlePreBtn.col.a ) * 0.01f;
+    }
+
+    g_TitlePreBtn.col.a += g_TitlePreBtn.fAlpha;
+
+    VERTEX_2D *pVtx;
+    g_TitlePreBtn.vtx->Lock( 0, 0, (void**)&pVtx, 0 );
+    {
+        pVtx[ 0 ].col
+            = pVtx[ 1 ].col
+            = pVtx[ 2 ].col
+            = pVtx[ 3 ].col
+            = g_TitlePreBtn.col;
+    }
+    g_TitlePreBtn.vtx -> Unlock();
 }
 
 /*************************************************************************
