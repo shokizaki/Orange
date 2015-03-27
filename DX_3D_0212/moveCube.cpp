@@ -53,6 +53,10 @@ void InitMoveCube( void )
 	// 位置読み込み
 	// ファイルの読み込み開始
 	FILE *fp = fopen( "RedCubePos.txt", "rt" );
+    if( fp == NULL )
+    {
+        return ;
+    }
 	char strWork[ 256 ];
 	D3DXVECTOR3 fWork;
 	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
@@ -66,6 +70,7 @@ void InitMoveCube( void )
 			SetMoveCube( fWork );
 		}
 	}
+    fclose(fp);
 }
 
 //-----------------------------------------------

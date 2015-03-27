@@ -12,11 +12,16 @@
 #include "game.h"
 #include "result.h"
 #include "ranking.h"
+#undef _DEBUG
 
 //------  グローバル変数  ------
+#ifdef _DEBUG
 MODE g_mode = MODE_TITLE;
 MODE g_nextMode = MODE_GAME;
-
+#else
+MODE g_mode     = MODE_RANKING;
+MODE g_nextMode = MODE_TITLE;
+#endif
 //===============================================
 //
 //  モード遷移処理

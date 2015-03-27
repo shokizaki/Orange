@@ -13,6 +13,8 @@
 //===============================================
 #include "debugproc.h"
 
+#undef _DEBUG
+
 //===============================================
 //
 //  グローバル変数
@@ -24,6 +26,7 @@ bool g_bFlagDebug = true;
 
 void InitDebugProc(void)
 {
+#ifdef _DEBUG
 	// ローカル変数
 	//------------------------------------
 	LPDIRECT3DDEVICE9 pDevice;						// デバイスオブジェクト
@@ -50,24 +53,29 @@ void InitDebugProc(void)
 
 	// グローバル変数初期化
 	g_bFlagDebug = true;
+#endif
 }
 
 void UninitDebugProc(void)
 {
+#ifdef _DEBUG
 	if (g_pD3DFont != NULL)
 	{
 		g_pD3DFont -> Release();			// フォントの解放
 		g_pD3DFont = NULL;					// フォントの解放
 	}
+#endif
 }
 
 void UpdateDebugProc(void)
 {
-
+#ifdef _DEBUG
+#endif
 }
 
 void DrawDebugProc(void)
 {
+#ifdef _DEBUG
 	RECT rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 	if ( GetKeyboardTrigger( DIK_F1 ) && g_bFlagDebug == false )
@@ -88,10 +96,12 @@ void DrawDebugProc(void)
 
 	// ゼロで中身を初期化
 	memset(&g_aStrDebug[0], 0, sizeof(g_aStrDebug));
+#endif
 }
 
 void PrintDebugProc(char *fmt, ...)
 {
+#ifdef _DEBUG
 	va_list list;	
 	char buff[256];
 
@@ -157,4 +167,5 @@ void PrintDebugProc(char *fmt, ...)
 
 	// 可変引数にアクセスした後の終了処理
 	va_end( list );
+#endif
 }

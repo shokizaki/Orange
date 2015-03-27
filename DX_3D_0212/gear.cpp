@@ -66,6 +66,10 @@ void InitGear( void )
 	FILE *fp = fopen( "GearPos.txt", "rt" );
 	char strWork[ 256 ];
 	D3DXVECTOR3 fWork;
+    if( fp == NULL )
+    {
+        return ;
+    }
 
 	// ファイルの読み込み開始
 	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
@@ -79,6 +83,7 @@ void InitGear( void )
 			SetGear( fWork );
 		}
 	}
+    fclose(fp);
 }
 
 //-----------------------------------------------

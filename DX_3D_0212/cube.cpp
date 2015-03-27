@@ -54,6 +54,10 @@ void InitCube( void )
 	FILE *fp = fopen( "CubePos.txt", "rt" );
 	char strWork[ 256 ];
 	D3DXVECTOR3 fWork;
+    if( fp == NULL )
+    {
+        return ;
+    }
 	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
 	{
 		// àÍçsì«Ç›çûÇﬁ
@@ -65,6 +69,7 @@ void InitCube( void )
 			SetCube( fWork );
 		}
 	}
+    fclose(fp);
 }
 
 //-----------------------------------------------
