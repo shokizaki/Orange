@@ -18,6 +18,7 @@
 #include "moveCube.h"
 #include "gear.h"
 #include "Edit.h"
+#include "background.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -40,6 +41,9 @@ void InitGame()
 	//------------------------------------
 	g_bMenu = false;
 	g_bUnintMenu = false;
+
+	//　背景初期化
+	InitBackGround();
 
 	// 
 	//InitEdit();
@@ -78,6 +82,9 @@ void InitGame()
 // ゲーム終了処理
 void UninitGame()
 {
+	//　背景終了
+	UninitBackGround();
+
 	// メッシュフィールド終了処理
 	//------------------------------------
 	UninitMeshField();
@@ -148,6 +155,7 @@ void UpdateGame()
 // ゲーム描画処理
 void DrawGame()
 {
+
 	// エディット描画
 	DrawEdit();
 
@@ -175,6 +183,8 @@ void DrawGame()
 	// UIの初期化
 	//------------------------------------
 	//DrawUI();
+	//　背景描画
+	DrawBackGround();
 
 	//// メニューがONだったら
 	//if ( g_bMenu == true )
