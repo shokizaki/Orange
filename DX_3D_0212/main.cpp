@@ -370,12 +370,17 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//------------------------------------
 	InitKeyboard( hInstance, hWnd );
 
+	// ゲームパッド初期化
+	InitGamePad( hInstance, hWnd );
+
 	// デバッグ初期化処理
 	//------------------------------------
 	InitDebugProc();
 
+	// 白キューブ初期化
 	InitCube();
 
+	// 赤キューブ初期化
 	InitMoveCube();
 
 	InitGear();
@@ -419,6 +424,8 @@ void Uninit()
 	//------------------------------------
 	UninitKeyboard();
 
+	UninitGamePad();
+
 	// 終了処理
 	//------------------------------------
 	UninitCube();
@@ -459,6 +466,8 @@ void Update( void )
 	// 入力処理の更新
 	//------------------------------------
 	UpdateKeyboard();
+
+	UpdateGamePad();
 
 	// デバッグ描画更新処理
 	//------------------------------------
