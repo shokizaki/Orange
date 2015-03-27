@@ -91,7 +91,7 @@ void InitGame()
 
 	if ( GetMode() == MODE_GAME )
 	{
-		//PlaySound( GAME_BGM );
+		PlaySound( GAME_BGM );
 	}
 }
 
@@ -138,7 +138,7 @@ void UninitGame()
 	//------------------------------------
 	//UninitMenu();
 
-	//StopSound();
+	StopSound();
 }
 
 // ÉQÅ[ÉÄçXêVèàóù

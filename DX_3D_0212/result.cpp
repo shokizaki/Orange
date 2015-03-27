@@ -49,6 +49,9 @@ bool   g_bResultFade = false;
 //-----------------------------------------------
 void InitResult()
 {
+    // BGM
+    PlaySound(RESULT_BGM);
+
 	g_nFrameCount = 0;
 	g_bResultFade = false;
 
@@ -64,10 +67,6 @@ void InitResult()
 								 D3DPOOL_MANAGED,					// バッファを保持するメモリクラスの指定
 								 &g_Result.vtx,					// 頂点バッファへのポインタ
 								 NULL);								// NULL固定
-	// タイトル背景初期化処理
-	//------------------------------------
-	//InitResultBG();
-
 		// データの位置を確保する（ロック）
 	//------------------------------------
 	VERTEX_2D *pVtx;
@@ -170,7 +169,8 @@ void UninitResult()
 		g_Result.vtx = NULL;
 	}
 
-	//StopSound();
+    // BGM
+	StopSound();
 }
 
 //-----------------------------------------------
@@ -185,8 +185,7 @@ void UpdateResult()
 	{
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );
-		SetMode( MODE_TITLE );
-		//SetMode( MODE_RANKING );
+		SetMode( MODE_RANKING );
 
 		g_bResultFade = true;
 	}

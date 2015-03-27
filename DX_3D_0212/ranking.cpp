@@ -28,6 +28,10 @@ bool g_bSound = false;													//再生したかどうか
 スコアの初期化処理
 *******************************************************************************/
 int InitRanking(void){
+
+    // BGM
+    PlaySound(RANKING_BGM);
+
 	LPDIRECT3DDEVICE9 pDevice;		//デバイスポインタ
 	FILE *fp;						//ファイルポインタ
 	errno_t error;					//エラーポインタ
@@ -173,41 +177,16 @@ int InitRanking(void){
 	}
 
 	g_pVtxBuffRankingPolygon->Unlock();
-	return S_OK;
-}
 
-/*******************************************************************************
-ランキングポリゴンの終了処理
-*******************************************************************************/
-void UninitRanking(void){
-	//テクスチャポインタの廃棄
-	for (int i = 0; i < RANKINGPOLYGON_TEXTURE; i++){
-		if (g_pRankingTexture[i] != NULL){
-			g_pRankingTexture[i]->Release();
-			g_pRankingTexture[i] = NULL;
-		}
-	}
-
-	//頂点バッファへのポインタの廃棄
-	if (g_pVtxBuffRankingPolygon != NULL){
-		g_pVtxBuffRankingPolygon->Release();
-		g_pVtxBuffRankingPolygon = NULL;
-	}
-}
-
-/*******************************************************************************
-ランキングの更新処理
-*******************************************************************************/
-void UpdateRanking(void){
-	FILE *fp;						//ファイルポインタ
-	errno_t error;					//エラーポインタ
+//    	FILE *fp;						//ファイルポインタ
+//	errno_t error;					//エラーポインタ
 	int nRanking = 0;				//各桁のスコア
 	double CntNum = pow(10.0, RANKING_POLYGON);	//上記に必要
 	float TexNumber = 0;			//UV座標
 	int rank = 0;
 //	int pScore;						//スコアポインタ
 
-	int pTimer = GetTimer();
+//	int pTimer = GetTimer();
 
 	for (int i = 0; i < (MAX_RANKING - 1); i++)
 	{
@@ -233,7 +212,7 @@ void UpdateRanking(void){
 	}
 	fclose(fp);				//ファイルを閉じる
 
-	VERTEX_2D *pVtx;
+//	VERTEX_2D *pVtx;
 	g_pVtxBuffRankingPolygon->Lock(0, 0, (void**)&pVtx, 0);
 
 	for (int y = 0; y < (MAX_RANKING - 1); y++){
@@ -288,7 +267,38 @@ void UpdateRanking(void){
 		g_pVtxBuffRankingPolygon->Unlock();
 	}
 
-	// エンターを押したら
+
+    return S_OK;
+}
+
+/*******************************************************************************
+ランキングポリゴンの終了処理
+*******************************************************************************/
+void UninitRanking(void){
+
+    // BGM
+    StopSound();
+
+	//テクスチャポインタの廃棄
+	for (int i = 0; i < RANKINGPOLYGON_TEXTURE; i++){
+		if (g_pRankingTexture[i] != NULL){
+			g_pRankingTexture[i]->Release();
+			g_pRankingTexture[i] = NULL;
+		}
+	}
+
+	//頂点バッファへのポインタの廃棄
+	if (g_pVtxBuffRankingPolygon != NULL){
+		g_pVtxBuffRankingPolygon->Release();
+		g_pVtxBuffRankingPolygon = NULL;
+	}
+}
+
+/*******************************************************************************
+ランキングの更新処理
+*******************************************************************************/
+void UpdateRanking(void){
+		// エンターを押したら
 	//------------------------------------
 	// 遷移判定
 	if ( ( GetKeyboardTrigger(DIK_RETURN) /*|| GetGamePadTrigger( GAMEPAD_START ) || GetGamePadTrigger( GAMEPAD_A )*/ || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
@@ -296,6 +306,7 @@ void UpdateRanking(void){
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );
 		SetMode( MODE_TITLE );
+
 	}
 
 }
