@@ -187,7 +187,7 @@ void UpdateResult()
 	{
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );
-		SetMode( MODE_TITLE );
+		SetMode( MODE_RANKING );
 
 		g_bResultFade = true;
 	}

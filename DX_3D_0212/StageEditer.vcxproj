@@ -88,6 +88,7 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gear.cpp" />
+    <ClCompile Include="goal.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="inputPad.cpp" />
     <ClCompile Include="light.cpp" />
@@ -98,10 +99,13 @@
     <ClCompile Include="moveCube.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="ranking.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="sheet.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="TitlePreBtn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="background.h" />
@@ -114,6 +118,7 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gear.h" />
+    <ClInclude Include="goal.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="inputPad.h" />
     <ClInclude Include="light.h" />
@@ -124,10 +129,13 @@
     <ClInclude Include="moveCube.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="ranking.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="sheet.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="TitlePreBtn.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

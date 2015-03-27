@@ -18,12 +18,12 @@
 //------ É}ÉNÉçíËã` ------
 #define PLAYER_WIDTH ( 20.0f )
 #define PLAYER_HEIGHT ( 20.0f )
-#define PLAYER_POS_X ( -200.0f )
+#define PLAYER_POS_X ( -680.0f )
 #define PLAYER_POS_Y ( 40.0f )
 #define PLAYER_POS_Z ( 0.0f )
 
 #define MOVE_VAL ( 3.0f )
-#define GRAVITY_VAL ( 0.5f )
+#define GRAVITY_VAL ( 0.7f )
 
 #define PLAYER_TEX_MAX ( 1 )
 

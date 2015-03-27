@@ -86,58 +86,72 @@ void UpdateCamera(void)
 
 	if ( GetEdit() == false )
 	{
-		//// 旋回
-		//if (GetKeyboardPress(DIK_Q))
-		//{
-		//	g_camera.rotCamera.y += 0.05f;
-		//}
-		//if (GetKeyboardPress(DIK_E))
-		//{
-		//	g_camera.rotCamera.y -= 0.05f;
-		//}
-
-		//// 注視点移動
-		//// 上移動
-		//if (GetKeyboardPress(DIK_R))
-		//{
-		//	g_camera.posCameraP.y += 5.0f;
-		//}
-		//// 下移動
-		//if (GetKeyboardPress(DIK_V))
-		//{
-		//	g_camera.posCameraP.y -= 5.0f;
-		//}
-		//
-		//// 視点移動
-		//if (GetKeyboardPress(DIK_T))
-		//{
-		//	g_camera.posCameraP.x -= sinf( g_camera.rotCamera.y ) * 5.0f;
-		//	g_camera.posCameraP.z += cosf( g_camera.rotCamera.y ) * 5.0f;
-		//}
-		//if (GetKeyboardPress(DIK_G))
-		//{
-		//	g_camera.posCameraP.x += sinf( g_camera.rotCamera.y ) * 5.0f;
-		//	g_camera.posCameraP.z -= cosf( g_camera.rotCamera.y ) * 5.0f;
-		//}
-		//if (GetKeyboardPress(DIK_F))
-		//{
-		//	g_camera.posCameraP.x -= cosf( g_camera.rotCamera.y ) * 5.0f;
-		//	g_camera.posCameraP.z -= sinf( g_camera.rotCamera.y ) * 5.0f;
-		//}
-		//if (GetKeyboardPress(DIK_H))
-		//{
-		//	g_camera.posCameraP.x += cosf( g_camera.rotCamera.y ) * 5.0f;
-		//	g_camera.posCameraP.z += sinf( g_camera.rotCamera.y ) * 5.0f;
-		//}
-
 		g_camera.posCameraP.x = pPosPlayer.x;
 		g_camera.posCameraP.y = pPosPlayer.y + 100.0f;
+		g_camera.posCameraP.z = pPosPlayer.z - 500.0f;
 		
 		g_camera.posCameraR.y = pPosPlayer.y + 100.0f;
 
 		// 移動した結果を注視点に反映
 		g_camera.posCameraR.x = g_camera.posCameraP.x + sinf(-g_camera.rotCamera.y) * g_camera.fLengthIntervalCamera;
 		g_camera.posCameraR.z = g_camera.posCameraP.z + cosf(g_camera.rotCamera.y) * g_camera.fLengthIntervalCamera;
+	}
+	else
+	{
+		// 旋回
+		if (GetKeyboardPress(DIK_Q))
+		{
+			g_camera.rotCamera.y += 0.05f;
+		}
+		if (GetKeyboardPress(DIK_E))
+		{
+			g_camera.rotCamera.y -= 0.05f;
+		}
+
+		// 注視点移動
+		// 上移動
+		if (GetKeyboardPress(DIK_R))
+		{
+			g_camera.posCameraP.y += 5.0f;
+		}
+		// 下移動
+		if (GetKeyboardPress(DIK_V))
+		{
+			g_camera.posCameraP.y -= 5.0f;
+		}
+		
+		// 視点移動
+		if (GetKeyboardPress(DIK_T))
+		{
+			g_camera.posCameraP.x -= sinf( g_camera.rotCamera.y ) * 5.0f;
+			g_camera.posCameraP.z += cosf( g_camera.rotCamera.y ) * 5.0f;
+		}
+		if (GetKeyboardPress(DIK_G))
+		{
+			g_camera.posCameraP.x += sinf( g_camera.rotCamera.y ) * 5.0f;
+			g_camera.posCameraP.z -= cosf( g_camera.rotCamera.y ) * 5.0f;
+		}
+		if (GetKeyboardPress(DIK_F))
+		{
+			g_camera.posCameraP.x -= cosf( g_camera.rotCamera.y ) * 5.0f;
+			g_camera.posCameraP.z -= sinf( g_camera.rotCamera.y ) * 5.0f;
+		}
+		if (GetKeyboardPress(DIK_H))
+		{
+			g_camera.posCameraP.x += cosf( g_camera.rotCamera.y ) * 5.0f;
+			g_camera.posCameraP.z += sinf( g_camera.rotCamera.y ) * 5.0f;
+		}
+
+		if ( GetKeyboardPress(DIK_N) )
+		{
+			g_camera.posCameraP.y -= 2.0f;
+			g_camera.posCameraR.y -= 2.0f;
+		}
+		if ( GetKeyboardPress(DIK_M) )
+		{
+			g_camera.posCameraP.y += 2.0f;
+			g_camera.posCameraR.y += 2.0f;
+		}
 	}
 
 	// カメラの回り込み処理（自動）

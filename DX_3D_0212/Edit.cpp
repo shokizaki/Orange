@@ -9,6 +9,7 @@
 #include "cube.h"
 #include "gear.h"
 #include "moveCube.h"
+#include "goal.h"
 
 //------ マクロ定義 ------
 
@@ -36,6 +37,8 @@ void UpdateEdit( void )
 
 		ZeroCubeRotation();
 		ZeroGearRotation();
+		ZeroMoveCubeRotation();
+		ZeroGoalRotation();
 	}
 
 	if ( g_bEdit == true )
@@ -45,9 +48,11 @@ void UpdateEdit( void )
 		PrintDebugProc("[ F2キーでキューブの位置を[ CubePosition.txt ]に書き込む ]\n");
 		PrintDebugProc("[ F4キーでキューブの位置を[ GearPosition.txt ]に書き込む ]\n");
 		PrintDebugProc("[ F5キーでキューブの位置を[ MoveCubePosition.txt ]に書き込む ]\n");
+		PrintDebugProc("[ F6キーでゴールの位置を[ GoalPosition.txt ]に書き込む ]\n");
 		PrintDebugProc("1 *** キューブエディット\n");
 		PrintDebugProc("2 *** 歯車エディット\n");
-		PrintDebugProc("3 *** 動くキューブエディット\n\n");
+		PrintDebugProc("3 *** 動くキューブエディット\n");
+		PrintDebugProc("3 *** ゴールエディット\n\n");
 		PrintDebugProc("W *** 上移動\n");
 		PrintDebugProc("A *** 左移動\n");
 		PrintDebugProc("S *** 下移動\n");
@@ -61,6 +66,7 @@ void UpdateEdit( void )
 			ZeroCubeRotation();
 			ZeroMoveCubeRotation();
 			ZeroGearRotation();
+			ZeroGoalRotation();
 		}
 		if ( GetKeyboardTrigger( DIK_2 ) == true )
 		{
@@ -69,6 +75,7 @@ void UpdateEdit( void )
 			ZeroCubeRotation();
 			ZeroMoveCubeRotation();
 			ZeroGearRotation();
+			ZeroGoalRotation();
 		}
 		if ( GetKeyboardTrigger( DIK_3 ) == true )
 		{
@@ -77,6 +84,16 @@ void UpdateEdit( void )
 			ZeroCubeRotation();
 			ZeroMoveCubeRotation();
 			ZeroGearRotation();
+			ZeroGoalRotation();
+		}
+		if ( GetKeyboardTrigger( DIK_4 ) == true )
+		{
+			g_nEditNumber = 4;
+
+			ZeroCubeRotation();
+			ZeroMoveCubeRotation();
+			ZeroGearRotation();
+			ZeroGoalRotation();
 		}
 		
 		if ( g_nEditNumber == 1 )
@@ -93,6 +110,11 @@ void UpdateEdit( void )
 		{
 			// 動くキューブエディット
 			EditMoveCube();
+		}
+		if ( g_nEditNumber == 4 )
+		{
+			// ゴールエディット
+			EditGoal();
 		}
 	}
 	else

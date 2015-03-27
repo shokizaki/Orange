@@ -172,8 +172,8 @@ void DrawBillboard( void )
 	// アルファテストの有効化
 	//------------------------------------
 	pDevice ->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	pDevice ->SetRenderState(D3DRS_ALPHAREF,		255);
-	pDevice ->SetRenderState(D3DRS_ALPHAFUNC,		D3DCMP_EQUAL);
+	//pDevice ->SetRenderState(D3DRS_ALPHAREF,		255);
+	//pDevice ->SetRenderState(D3DRS_ALPHAFUNC,		D3DCMP_EQUAL);
 
 	for (int nCnt = 0; nCnt < BILLBOARD_MAX; nCnt++)
 	{
@@ -223,15 +223,11 @@ void DrawBillboard( void )
 			//------------------------------------
   			pDevice -> SetTexture( 0, NULL/*g_pTextureBillboard[ ( int )g_aBillboard[ nCnt ].type ]*/ );
 
-			//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);		//カリングの設定( 裏面をカリングする )
-
 			// ポリゴンの描画
 			//------------------------------------
 			pDevice -> DrawPrimitive(D3DPT_TRIANGLESTRIP,	// プリミティブの種類
 											nCnt * 4,		// 読み込む最初の番号
 											2);				// 描画するプリミティブ数
-
-			//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);		//カリングの設定( 裏面をカリングする )
 		}
 	}
 
@@ -276,6 +272,11 @@ void SetupBillboard( void )
 			pVtx[ 1 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, g_aBillboard[ num ].a );
 			pVtx[ 2 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, g_aBillboard[ num ].a );
 			pVtx[ 3 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, g_aBillboard[ num ].a );
+
+			/*pVtx[ 0 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );
+			pVtx[ 1 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );
+			pVtx[ 2 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );
+			pVtx[ 3 + num * 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );*/
 
 			pVtx[ 0 + num * 4 ].tex = D3DXVECTOR2(0.0f, 0.0f);
 			pVtx[ 1 + num * 4 ].tex = D3DXVECTOR2(1.0f, 0.0f);

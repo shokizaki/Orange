@@ -1,33 +1,33 @@
 //-----------------------------------------------
 //  内容：歯車描画処理
-//  File : gear.cpp
+//  File : goal.cpp
 //  制作者：木崎　翔
 //-----------------------------------------------
 
 //------ インクルードファイル ------
-#include "gear.h"
+#include "goal.h"
 #include "camera.h"
 #include "player.h"
 #include "sheet.h"
 
 //------ マクロ定義 ------
-#define GEAR_WIDTH ( 15.0f )
-#define GEAR_HEIGHT ( 15.0f )
+#define GOAL_WIDTH ( 15.0f )
+#define GOAL_HEIGHT ( 15.0f )
 
 //------ グローバル変数 ------
-GEAR g_aGear[ GEAR_MAX ];
+GOAL g_aGoal[ GOAL_MAX ];
 
-bool g_bMoveGear = false;	// 選択しているかどうか
-bool g_bGearSelect = false;	// 選択しているかどうか（生成する時の判定）
-int g_nMoveGear = 0;		// 選択している歯車のインデックス
-int g_nCreateGearNum = 0;	// 生成された歯車の数
+bool g_bMoveGoal = false;	// 選択しているかどうか
+bool g_bGoalSelect = false;	// 選択しているかどうか（生成する時の判定）
+int g_nMoveGoal = 0;		// 選択している歯車のインデックス
+int g_nCreateGoalNum = 0;	// 生成された歯車の数
 
 //------ 内部関数宣言 ------
 
 //-----------------------------------------------
 // 歯車描画初期化
 //-----------------------------------------------
-void InitGear( void )
+void InitGoal( void )
 {
 	// ローカル変数
 	//---------------------------------
@@ -37,16 +37,16 @@ void InitGear( void )
 	//------------------------------------
 	pDevice = GetDevice();
 
-	for ( int i = 0; i < GEAR_MAX; i++ )
+	for ( int i = 0; i < GOAL_MAX; i++ )
 	{
-		g_aGear[ i ].bUse = false;
-		g_aGear[ i ].bRotation = false;
+		g_aGoal[ i ].bUse = false;
+		g_aGoal[ i ].bRotation = false;
 	}
 
 	//{
 	//	// xファイルの読み込み
 	//	//------------------------------------
-	//	D3DXLoadMeshFromX("data/MODEL/gear.x",		// 読み込むファイル名
+	//	D3DXLoadMeshFromX("data/MODEL/goal.x",		// 読み込むファイル名
 	//					  D3DXMESH_SYSTEMMEM,							// 
 	//					  pDevice,										// 
 	//					  NULL,											// 
@@ -57,13 +57,13 @@ void InitGear( void )
 	//}
 
 	// グローバル変数の初期化
-	g_bMoveGear = false;
-	g_nMoveGear = 0;
-	g_nCreateGearNum = 0;
-	g_bGearSelect = false;
+	g_bMoveGoal = false;
+	g_nMoveGoal = 0;
+	g_nCreateGoalNum = 0;
+	g_bGoalSelect = false;
 
 	// 位置読み込み処理開始	
-	FILE *fp = fopen( "GearPos.txt", "rt" );
+	FILE *fp = fopen( "GoalPos.txt", "rt" );
 	char strWork[ 256 ];
 	D3DXVECTOR3 fWork;
 
@@ -76,7 +76,7 @@ void InitGear( void )
 		if ( strcmp( strWork, "POS" ) == 0 )
 		{
 			// 白キューブ生成
-			SetGear( fWork );
+			SetGoal( fWork );
 		}
 	}
 }
@@ -84,26 +84,26 @@ void InitGear( void )
 //-----------------------------------------------
 // 歯車描画終了処理
 //-----------------------------------------------
-void UninitGear( void )
+void UninitGoal( void )
 {
-	for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < GOAL_MAX; nCnt++)
 	{
-		if ( g_aGear[ nCnt ].bUse == true )
+		if ( g_aGoal[ nCnt ].bUse == true )
 		{
 			// メッシュ情報の解放と初期化
 			//------------------------------------
-			if (g_aGear[ nCnt ].pMeshModel != NULL)
+			if (g_aGoal[ nCnt ].pMeshModel != NULL)
 			{ 
-				g_aGear[ nCnt ].pMeshModel ->Release();
-				g_aGear[ nCnt ].pMeshModel = NULL;
+				g_aGoal[ nCnt ].pMeshModel ->Release();
+				g_aGoal[ nCnt ].pMeshModel = NULL;
 			}
 	
 			// マテリアル情報の解放と初期化
 			//------------------------------------
-			if (g_aGear[ nCnt ].pBuffMatModel != NULL)
+			if (g_aGoal[ nCnt ].pBuffMatModel != NULL)
 			{ 
-				g_aGear[ nCnt ].pBuffMatModel ->Release();
-				g_aGear[ nCnt ].pBuffMatModel = NULL;
+				g_aGoal[ nCnt ].pBuffMatModel ->Release();
+				g_aGoal[ nCnt ].pBuffMatModel = NULL;
 			}
 		}
 	}
@@ -112,32 +112,32 @@ void UninitGear( void )
 //-----------------------------------------------
 // 歯車描画更新処理
 //-----------------------------------------------
-void UpdateGear( void )
+void UpdateGoal( void )
 {
-	g_aGear[ 0 ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
+	g_aGoal[ 0 ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 	{
 		// 歯車位置の保存
 		if ( GetKeyboardTrigger( DIK_F4 ) == true )
 		{
 			// ファイルのオープン
-			FILE *fp = fopen( "GearPositionInfo.txt", "wt" );
+			FILE *fp = fopen( "GoalPositionInfo.txt", "wt" );
 
-			for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+			for (int nCnt = 0; nCnt < GOAL_MAX; nCnt++)
 			{
-				if ( g_aGear[ nCnt ].bUse == true )
+				if ( g_aGoal[ nCnt ].bUse == true )
 				{
 					char workChar[ 256 ] = "POS = ";
 					char workFloatTrans[ 256 ];
 
 					// 位置をワークに突っ込む
-					sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.x );
+					sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.x );
 					strcat( workChar, workFloatTrans );		// 連結
 					strcat( workChar, " " );				// 連結
-					sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.y );
+					sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.y );
 					strcat( workChar, workFloatTrans );		// 連結
 					strcat( workChar, " " );				// 連結
-					sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.z );
+					sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.z );
 					strcat( workChar, workFloatTrans );		// 連結
 					strcat( workChar, "\n" );				// 連結
 
@@ -151,13 +151,13 @@ void UpdateGear( void )
 		}
 
 		// 回転処理
-		for ( int i = 0; i < GEAR_MAX; i++ )
+		for ( int i = 0; i < GOAL_MAX; i++ )
 		{
-			if ( g_aGear[ i ].bUse == true )
+			if ( g_aGoal[ i ].bUse == true )
 			{
-				if ( g_aGear[ i ].bRotation == true )
+				if ( g_aGoal[ i ].bRotation == true )
 				{
-					g_aGear[ i ].rot.z += 0.025f;
+					g_aGoal[ i ].rot.z += 0.025f;
 				}
 			}
 		}
@@ -167,7 +167,7 @@ void UpdateGear( void )
 //-----------------------------------------------
 // 歯車描画描画処理
 //-----------------------------------------------
-void DrawGear( void )
+void DrawGoal( void )
 {
 	// ローカル変数
 	//------------------------------------
@@ -187,35 +187,35 @@ void DrawGear( void )
 	//if ( GetSheet() == true )
 	{
 		// それぞれのパーツの行列計算と描画開始
-		for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+		for (int nCnt = 0; nCnt < GOAL_MAX; nCnt++)
 		{
-			if ( g_aGear[ nCnt ].bUse == true )
+			if ( g_aGoal[ nCnt ].bUse == true )
 			{
-				D3DXMatrixIdentity( &g_aGear[ nCnt ].mtxWorld );	// フォーマットの初期化
+				D3DXMatrixIdentity( &g_aGoal[ nCnt ].mtxWorld );	// フォーマットの初期化
 				D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
 				D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
 				D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
 
 				// スケールを反映
-				D3DXMatrixScaling(&mtxScl, g_aGear[ nCnt ].scl.x, g_aGear[ nCnt ].scl.y, g_aGear[ nCnt ].scl.z);
-				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxScl);
+				D3DXMatrixScaling(&mtxScl, g_aGoal[ nCnt ].scl.x, g_aGoal[ nCnt ].scl.y, g_aGoal[ nCnt ].scl.z);
+				D3DXMatrixMultiply(&g_aGoal[ nCnt ].mtxWorld, &g_aGoal[ nCnt ].mtxWorld, &mtxScl);
 
 				// 向きを反映
-				D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aGear[ nCnt ].rot.y, g_aGear[ nCnt ].rot.x, g_aGear[ nCnt ].rot.z);
-				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxRot);
+				D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aGoal[ nCnt ].rot.y, g_aGoal[ nCnt ].rot.x, g_aGoal[ nCnt ].rot.z);
+				D3DXMatrixMultiply(&g_aGoal[ nCnt ].mtxWorld, &g_aGoal[ nCnt ].mtxWorld, &mtxRot);
 
 				// 位置を反映
-				D3DXMatrixTranslation(&mtxTranslate, g_aGear[ nCnt ].pos.x, g_aGear[ nCnt ].pos.y, g_aGear[ nCnt ].pos.z);
-				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxTranslate);
+				D3DXMatrixTranslation(&mtxTranslate, g_aGoal[ nCnt ].pos.x, g_aGoal[ nCnt ].pos.y, g_aGoal[ nCnt ].pos.z);
+				D3DXMatrixMultiply(&g_aGoal[ nCnt ].mtxWorld, &g_aGoal[ nCnt ].mtxWorld, &mtxTranslate);
 
 				// 設定
-				pDevice ->SetTransform(D3DTS_WORLD, &g_aGear[ nCnt ].mtxWorld);
+				pDevice ->SetTransform(D3DTS_WORLD, &g_aGoal[ nCnt ].mtxWorld);
 
 				// 現在のマテリアル情報を保存
 				pDevice ->GetMaterial( &matDef );
 
 				// バッファへのポインタを取得
-				pMat = (D3DXMATERIAL*)g_aGear[ nCnt ].pBuffMatModel ->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)g_aGoal[ nCnt ].pBuffMatModel ->GetBufferPointer();
 
 				/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
 
@@ -224,11 +224,11 @@ void DrawGear( void )
 				D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
 			
 				// マテリアルの数だけループ
-				for (int nCntMat = 0; nCntMat < (int)g_aGear[ nCnt ].numMatModel; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)g_aGoal[ nCnt ].numMatModel; nCntMat++)
 				{
 					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-					pDevice ->SetTexture( 0, g_aGear[ nCnt ].pTexture );							// テクスチャのセット
-					g_aGear[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
+					pDevice ->SetTexture( 0, g_aGoal[ nCnt ].pTexture );							// テクスチャのセット
+					g_aGoal[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
 				}
 			
 				// マテリアルを元に戻す
@@ -242,7 +242,7 @@ void DrawGear( void )
 //-----------------------------------------------
 // 歯車セット
 //-----------------------------------------------
-int SetGear( D3DXVECTOR3 pos )
+int SetGoal( D3DXVECTOR3 pos )
 {
 	// ローカル変数
 	//---------------------------------
@@ -252,160 +252,160 @@ int SetGear( D3DXVECTOR3 pos )
 	//------------------------------------
 	pDevice = GetDevice();
 
-	for ( int i = 0; i < GEAR_MAX; i++ )
+	for ( int i = 0; i < GOAL_MAX; i++ )
 	{
-		if ( g_aGear[ i ].bUse == false )
+		if ( g_aGoal[ i ].bUse == false )
 		{
 			// 位置の設定
-			g_aGear[ i ].pos = pos;
-			g_aGear[ i ].rot = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-			g_aGear[ i ].scl = D3DXVECTOR3( 1.0f, 1.0f, 1.0f );
+			g_aGoal[ i ].pos = pos;
+			g_aGoal[ i ].rot = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
+			g_aGoal[ i ].scl = D3DXVECTOR3( 1.0f, 1.0f, 1.0f );
 
-			g_aGear[ i ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
+			g_aGoal[ i ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 			// 当たり判定用
-			g_aGear[ i ].rect.pos = pos;
-			g_aGear[ i ].rect.harfSize = D3DXVECTOR3( GEAR_WIDTH, GEAR_HEIGHT, GEAR_HEIGHT );
+			g_aGoal[ i ].rect.pos = pos;
+			g_aGoal[ i ].rect.harfSize = D3DXVECTOR3( GOAL_WIDTH, GOAL_HEIGHT, GOAL_HEIGHT );
 
 			// モデル情報をコピー
-			//g_aGear[ i ].numMatModel = numMatModelInit;
-			//g_aGear[ i ].pBuffMatModel = pBuffMatModelInit;
-			//g_aGear[ i ].pMeshModel = pMeshModelInit;
+			//g_aGoal[ i ].numMatModel = numMatModelInit;
+			//g_aGoal[ i ].pBuffMatModel = pBuffMatModelInit;
+			//g_aGoal[ i ].pMeshModel = pMeshModelInit;
 
 			{
 				// xファイルの読み込み
 				//------------------------------------
-				D3DXLoadMeshFromX("data/MODEL/Block_Nor.x",		// 読み込むファイル名
+				D3DXLoadMeshFromX("data/MODEL/gear.x",		// 読み込むファイル名
 								  D3DXMESH_SYSTEMMEM,			// 
 								  pDevice,						// 
 								  NULL,							// 
-								  &g_aGear[ i ].pBuffMatModel,	// 
+								  &g_aGoal[ i ].pBuffMatModel,	// 
 								  NULL,							// 
-								  &g_aGear[ i ].numMatModel,	// 
-								  &g_aGear[ i ].pMeshModel );
+								  &g_aGoal[ i ].numMatModel,	// 
+								  &g_aGoal[ i ].pMeshModel );
 			}
 
 			// テクスチャの読み込み
 			//------------------------------------
-			D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Block.jpg", &g_aGear[ i ].pTexture);
+			D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Block.jpg", &g_aGoal[ i ].pTexture);
 
 			// 回転フラグ
-			g_aGear[ i ].bRotation = false;
+			g_aGoal[ i ].bRotation = false;
 
-			g_aGear[ i ].bUse = true;
+			g_aGoal[ i ].bUse = true;
 			
 			// 生成した数を増やす
-			g_nCreateGearNum++;
+			g_nCreateGoalNum++;
 
 			// インデックスを返す
 			return i;
 		}
 	}
 
-	return GEAR_MAX;
+	return GOAL_MAX;
 }
 
 //-----------------------------------------------
 // エディット更新
 //-----------------------------------------------
-void EditGear( void )
+void EditGoal( void )
 {
-	if ( GetKeyboardTrigger( DIK_B ) == true && g_bGearSelect == false )
+	if ( GetKeyboardTrigger( DIK_B ) == true && g_bGoalSelect == false )
 	{
 		// 角度を初期化
-		g_aGear[ g_nMoveGear ].rot.y = 0.0f;
+		g_aGoal[ g_nMoveGoal ].rot.y = 0.0f;
 
 		// 歯車の生成
-		g_nMoveGear = SetGear( D3DXVECTOR3( g_aGear[ g_nMoveGear ].pos.x + 40.0f, g_aGear[ g_nMoveGear ].pos.y, g_aGear[ g_nMoveGear ].pos.z ) );
+		g_nMoveGoal = SetGoal( D3DXVECTOR3( g_aGoal[ g_nMoveGoal ].pos.x + 40.0f, g_aGoal[ g_nMoveGoal ].pos.y, g_aGoal[ g_nMoveGoal ].pos.z ) );
 	}
 
-	//if ( g_bMoveGear == true )
+	//if ( g_bMoveGoal == true )
 	{
 		// 移動処理
 		if ( GetKeyboardTrigger( DIK_A ) == true )
 		{
-			g_aGear[ g_nMoveGear ].pos.x += -40.0f;
+			g_aGoal[ g_nMoveGoal ].pos.x += -40.0f;
 		}
 		if ( GetKeyboardTrigger( DIK_D ) == true )
 		{
-			g_aGear[ g_nMoveGear ].pos.x += 40.0f;
+			g_aGoal[ g_nMoveGoal ].pos.x += 40.0f;
 		}
 		if ( GetKeyboardTrigger( DIK_W ) == true )
 		{
-			g_aGear[ g_nMoveGear ].pos.y += 40.0f;
+			g_aGoal[ g_nMoveGoal ].pos.y += 40.0f;
 		}
 		if ( GetKeyboardTrigger( DIK_S ) == true )
 		{
-			g_aGear[ g_nMoveGear ].pos.y += -40.0f;
+			g_aGoal[ g_nMoveGoal ].pos.y += -40.0f;
 		}
 
-		g_aGear[ g_nMoveGear ].rect.pos = g_aGear[ g_nMoveGear ].pos;
-		g_aGear[ g_nMoveGear ].rot.y += 0.025f;
+		g_aGoal[ g_nMoveGoal ].rect.pos = g_aGoal[ g_nMoveGoal ].pos;
+		g_aGoal[ g_nMoveGoal ].rot.y += 0.025f;
 	}
 
 	// 選択している歯車の変更
 	if ( GetKeyboardTrigger( DIK_UP ) == true )
 	{
 		// 角度を初期化
-		g_aGear[ g_nMoveGear ].rot.y = 0.0f;
+		g_aGoal[ g_nMoveGoal ].rot.y = 0.0f;
 			
-		g_nMoveGear--;
-		if ( g_nMoveGear < 0 )
+		g_nMoveGoal--;
+		if ( g_nMoveGoal < 0 )
 		{
-			g_nMoveGear = g_nCreateGearNum - 1;
+			g_nMoveGoal = g_nCreateGoalNum - 1;
 		}
 	}
 	if ( GetKeyboardTrigger( DIK_DOWN ) == true )
 	{
 		// 角度を初期化
-		g_aGear[ g_nMoveGear ].rot.y = 0.0f;
+		g_aGoal[ g_nMoveGoal ].rot.y = 0.0f;
 
-		g_nMoveGear++;
-		if ( g_nMoveGear > g_nCreateGearNum - 1 )
+		g_nMoveGoal++;
+		if ( g_nMoveGoal > g_nCreateGoalNum - 1 )
 		{
-			g_nMoveGear = 0;
+			g_nMoveGoal = 0;
 		}
 	}
 
 	// 歯車の削除
 	if ( GetKeyboardTrigger( DIK_SPACE ) == true )
 	{
-		g_nCreateGearNum--;
-		if ( g_nCreateGearNum < 0 )
+		g_nCreateGoalNum--;
+		if ( g_nCreateGoalNum < 0 )
 		{
-			g_nCreateGearNum = 0;
+			g_nCreateGoalNum = 0;
 		}
 
-		for ( int i = g_nMoveGear; i < g_nCreateGearNum; i++ )
+		for ( int i = g_nMoveGoal; i < g_nCreateGoalNum; i++ )
 		{
-			g_aGear[ i ].pos = g_aGear[ i + 1 ].pos;
-			g_aGear[ i ].rect.pos = g_aGear[ i + 1 ].pos;
+			g_aGoal[ i ].pos = g_aGoal[ i + 1 ].pos;
+			g_aGoal[ i ].rect.pos = g_aGoal[ i + 1 ].pos;
 		}
 
-		g_aGear[ g_nCreateGearNum ].bUse = false;
+		g_aGoal[ g_nCreateGoalNum ].bUse = false;
 	}
 
 	// 歯車位置の保存
 	if ( GetKeyboardTrigger( DIK_F4 ) == true )
 	{
 		// ファイルのオープン
-		FILE *fp = fopen( "GearPositionInfo.txt", "wt" );
+		FILE *fp = fopen( "GoalPositionInfo.txt", "wt" );
 
-		for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+		for (int nCnt = 0; nCnt < GOAL_MAX; nCnt++)
 		{
-			if ( g_aGear[ nCnt ].bUse == true )
+			if ( g_aGoal[ nCnt ].bUse == true )
 			{
 				char workChar[ 256 ] = "POS = ";
 				char workFloatTrans[ 256 ];
 
 				// 位置をワークに突っ込む
-				sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.x );
+				sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.x );
 				strcat( workChar, workFloatTrans );		// 連結
 				strcat( workChar, " " );				// 連結
-				sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.y );
+				sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.y );
 				strcat( workChar, workFloatTrans );		// 連結
 				strcat( workChar, " " );				// 連結
-				sprintf( workFloatTrans, "%.2f", g_aGear[ nCnt ].pos.z );
+				sprintf( workFloatTrans, "%.2f", g_aGoal[ nCnt ].pos.z );
 				strcat( workChar, workFloatTrans );		// 連結
 				strcat( workChar, "\n" );				// 連結
 
@@ -420,26 +420,26 @@ void EditGear( void )
 
 	PrintDebugProc("[ Bキーで歯車生成 ]\n");
 	PrintDebugProc("[ SPACEキーで選択している歯車を削除 ]\n");
-	PrintDebugProc("歯車の個数 : %d\n", g_nCreateGearNum);
+	PrintDebugProc("歯車の個数 : %d\n", g_nCreateGoalNum);
 	PrintDebugProc("↑、↓ *** 歯車番号の選択");
-	PrintDebugProc("選択している歯車番号 : %d\n", g_nMoveGear);
+	PrintDebugProc("選択している歯車番号 : %d\n", g_nMoveGoal);
 
-	int nNum = g_nMoveGear - 10;
+	int nNum = g_nMoveGoal - 10;
 	if ( nNum < 0 )
 	{
 		nNum = 0;
 	}
 	for ( int i = nNum; i < nNum+ 11; i++ )
 	{
-		if ( g_aGear[ i ].bUse == true )
+		if ( g_aGoal[ i ].bUse == true )
 		{
-			if ( i == g_nMoveGear )
+			if ( i == g_nMoveGoal )
 			{
-				PrintDebugProc("->* [ %d ] * %f %f %f\n", i, g_aGear[ i ].pos.x, g_aGear[ i ].pos.y, g_aGear[ i ].pos.z);
+				PrintDebugProc("->* [ %d ] * %f %f %f\n", i, g_aGoal[ i ].pos.x, g_aGoal[ i ].pos.y, g_aGoal[ i ].pos.z);
 			}
 			else
 			{
-				PrintDebugProc("* [ %d ] * %f %f %f\n", i, g_aGear[ i ].pos.x, g_aGear[ i ].pos.y, g_aGear[ i ].pos.z);
+				PrintDebugProc("* [ %d ] * %f %f %f\n", i, g_aGoal[ i ].pos.x, g_aGoal[ i ].pos.y, g_aGoal[ i ].pos.z);
 			}
 		}
 	}
@@ -448,37 +448,37 @@ void EditGear( void )
 //-----------------------------------------------
 // 当たり判定の取得
 //-----------------------------------------------
-GEAR *GetGear( void )
+GOAL *GetGoal( void )
 {
-	return &g_aGear[ 0 ];
+	return &g_aGoal[ 0 ];
 }
 
 //-----------------------------------------------
 // 回転させる判定
 //-----------------------------------------------
-void SetGearRotation( int num, bool use )
+void SetGoalRotation( int num, bool use )
 {
-	g_aGear[ num ].bRotation = use;
+	g_aGoal[ num ].bRotation = use;
 }
 
 //-----------------------------------------------
 // 回転させる判定の取得
 //-----------------------------------------------
-bool GetGearRotation( int num )
+bool GetGoalRotation( int num )
 {
-	return g_aGear[ num ].bRotation;
+	return g_aGoal[ num ].bRotation;
 }
 
 //-----------------------------------------------
 // 角度直し
 //-----------------------------------------------
-void ZeroGearRotation( void )
+void ZeroGoalRotation( void )
 {
-	for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < GOAL_MAX; nCnt++)
 	{
-		if ( g_aGear[ nCnt ].bUse == true )
+		if ( g_aGoal[ nCnt ].bUse == true )
 		{
-			g_aGear[ nCnt ].rot = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
+			g_aGoal[ nCnt ].rot = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 		}
 	}
 }

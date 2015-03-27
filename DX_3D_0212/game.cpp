@@ -22,6 +22,7 @@
 #include "billboard.h"
 #include "sheet.h"
 #include "background.h"
+#include "timer.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -81,6 +82,9 @@ void InitGame()
 	// シート初期化
 	InitSheet();
 
+	// タイマー初期化
+	InitTimer();
+
 	// メニューの初期化
 	//------------------------------------
 	//InitMenu();
@@ -126,6 +130,9 @@ void UninitGame()
 
 	// 背景初期化
 	UninitBackGround();
+
+	// タイマー初期化
+	UninitTimer();
 	
 	// メニューの終了
 	//------------------------------------
@@ -191,6 +198,9 @@ void UpdateGame()
 	// 背景初期化
 	UpdateBackGround();
 
+	// タイマー初期化
+	UpdateTimer();
+
 	// 遷移判定
 	if ( ( GetKeyboardTrigger( DIK_RSHIFT ) == true || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
 	{
@@ -234,6 +244,9 @@ void DrawGame()
 
 	// シート描画
 	DrawSheet();
+
+	// タイマー初期化
+	//DrawTimer();
 
 	// UIの初期化
 	//------------------------------------

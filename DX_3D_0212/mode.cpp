@@ -11,6 +11,7 @@
 #include "title.h"
 #include "game.h"
 #include "result.h"
+#include "ranking.h"
 
 //------  ÉOÉçÅ[ÉoÉãïœêî  ------
 MODE g_mode = MODE_TITLE;
@@ -47,7 +48,7 @@ void ChangeScene( void )
 		break;
 
 	case MODE_RANKING:
-		//UninitRanking();
+		UninitRanking();
 
 		break;
 
@@ -84,7 +85,7 @@ void ChangeScene( void )
 		break;
 
 	case MODE_RANKING:
-		//InitRanking();
+		InitRanking();
 
 		break;
 
@@ -129,7 +130,7 @@ void UninitMode( void )
 		break;
 
 	case MODE_RANKING:
-		//UninitRanking();
+		UninitRanking();
 
 		break;
 
@@ -170,7 +171,7 @@ void UpdateMode( void )
 		break;
 
 	case MODE_RANKING:
-		//UpdateRanking();
+		UpdateRanking();
 
 		break;
 
@@ -215,7 +216,7 @@ void DrawMode( void )
 
 	case MODE_RANKING:
 		PrintDebugProc("MODE_RANKING\n");
-		//DrawRanking();
+		DrawRanking();
 
 		break;
 
