@@ -18,7 +18,7 @@ Scene {
 	}
 }
 Material 1 {
-	"cube" col(1.000 1.000 1.000 1.000) dif(0.000) amb(0.000) emi(1.000) spc(0.000) power(0.00) tex("C:\Users\anzuy_000\Dropbox\_作業用\TGS_20150327_No5\リソース\テクスチャ\Block.jpg")
+	"cube" col(1.000 1.000 1.000 1.000) dif(0.000) amb(0.000) emi(1.000) spc(0.000) power(0.00) tex("data\TEXTURE\Block.jpg")
 }
 Object "obj1" {
 	visible 15
