@@ -11,51 +11,58 @@
 #include "main.h"
 #include "input.h"
 #include "fade.h"
-//#include "resultbg.h"
 
 //-----------------------------------------------
 //　マクロ定義
 //-----------------------------------------------
-#define RESULT_MAX  ( 2 )			 // 頂点の数
-#define TEXTURE_MAX ( 2 )			 // 使用するテクスチャの数
 
-#define THANKS_POS_X	( SCREEN_WIDTH / 2 )
-#define THANKS_POS_Y	( SCREEN_HEIGHT - 100.0f )
-#define THANKS_WIDTH	( 300.0f )
-#define THANKS_HEIGHT	( 40.0f )
+enum tagRESULT_TEX
+{
+    RESULT_TEX_BG = 0,
+    RESULT_TEX_PLAYER,
+
+    RESULT_TEX_MAX
+};
+
+//-----------------------------------------------
+//　構造体定義
+//-----------------------------------------------
+
+typedef struct tagRESULT
+{
+    LPDIRECT3DVERTEXBUFFER9 vtx;                    // 頂点バッファ
+    LPDIRECT3DTEXTURE9      tex[RESULT_TEX_MAX];    // テクスチャバッファ
+    LPD3DXMESH              pMeshPlayer;            // メッシュ情報へのポインタ
+    LPD3DXBUFFER            pBuffMatPlayer;         // マテリアル情報へのポインタ
+    DWORD                   nMatPlayer;             // マテリアルの数
+}RESULT;
 
 //-----------------------------------------------
 //  グローバル変数
 //-----------------------------------------------
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult = NULL;		// 頂点バッファへのポインタ
-LPDIRECT3DTEXTURE9 g_pTextureResult[TEXTURE_MAX];		// テクスチャへのポインタ
-int g_nFrameCount = 0;
-bool g_bResultFade = false;
+RESULT g_Result;
+int    g_nFrameCount = 0;
+bool   g_bResultFade = false;
 
 //-----------------------------------------------
 // 背景初期化処理
 //-----------------------------------------------
 void InitResult()
 {
-	// 初期化
-	//------------------------------------
 	g_nFrameCount = 0;
 	g_bResultFade = false;
 
-	// ローカル変数
-	//---------------------------------
 	LPDIRECT3DDEVICE9 pDevice;		// デバイスオブジェクト
-	VERTEX_2D *pVtx;
 
 	// デバイス取得
 	//------------------------------------
 	pDevice = GetDevice();
 
-	pDevice ->CreateVertexBuffer((sizeof( VERTEX_2D ) * 4 * RESULT_MAX),	// 頂点データ用に確保するバッファ
+	pDevice ->CreateVertexBuffer(( sizeof( VERTEX_2D ) * 4 ),	// 頂点データ用に確保するバッファ
 								 D3DUSAGE_WRITEONLY,				// 頂点バッファの使用方法
 								 FVF_VERTEX_2D,						// 使用する頂点フォーマット
 								 D3DPOOL_MANAGED,					// バッファを保持するメモリクラスの指定
-								 &g_pVtxBuffResult,					// 頂点バッファへのポインタ
+								 &g_Result.vtx,					// 頂点バッファへのポインタ
 								 NULL);								// NULL固定
 	// タイトル背景初期化処理
 	//------------------------------------
@@ -63,28 +70,24 @@ void InitResult()
 
 		// データの位置を確保する（ロック）
 	//------------------------------------
-	g_pVtxBuffResult ->Lock(0,
-						0,
-						(void**)&pVtx,
-						0);
+	VERTEX_2D *pVtx;
+	g_Result.vtx ->Lock( 0, 0, (void**)&pVtx, 0 );
 
-	// 
-	//------------------------------------
-	pVtx[ 0 ].pos.x = 0.0f;
+    pVtx[ 0 ].pos.x = 0.0f;
 	pVtx[ 0 ].pos.y = 0.0f;	// 頂点の位置
-	pVtx[ 0 ].pos.z = 0.0f;												// 頂点の位置
+	pVtx[ 0 ].pos.z = 1.0f;												// 頂点の位置
 
 	pVtx[ 1 ].pos.x = SCREEN_WIDTH;
 	pVtx[ 1 ].pos.y = 0.0f;	// 頂点の位置
-	pVtx[ 1 ].pos.z = 0.0f;												// 頂点の位置
+	pVtx[ 1 ].pos.z = 1.0f;												// 頂点の位置
 
 	pVtx[ 2 ].pos.x = 0.0f;
 	pVtx[ 2 ].pos.y = SCREEN_HEIGHT;	// 頂点の位置
-	pVtx[ 2 ].pos.z = 0.0f;												// 頂点の位置
+	pVtx[ 2 ].pos.z = 1.0f;												// 頂点の位置
 
 	pVtx[ 3 ].pos.x = SCREEN_WIDTH;
 	pVtx[ 3 ].pos.y = SCREEN_HEIGHT;	// 頂点の位置
-	pVtx[ 3 ].pos.z = 0.0f;												// 頂点の位置
+	pVtx[ 3 ].pos.z = 1.0f;												// 頂点の位置
 
 	// 法線
 	pVtx[ 0 ].rhw = 1.0f;
@@ -94,60 +97,36 @@ void InitResult()
 
 	// フェードの色
 	//------------------------------------
-	pVtx[ 0 ].col = D3DXCOLOR( 1.0f, 0.0f, 0.0f, 1.0f );			// 頂点ごとの色の設定
-	pVtx[ 1 ].col = D3DXCOLOR( 1.0f, 0.0f, 0.0f, 1.0f );			//			↓
-	pVtx[ 2 ].col = D3DXCOLOR( 1.0f, 0.0f, 0.0f, 1.0f );			//			↓
-	pVtx[ 3 ].col = D3DXCOLOR( 1.0f, 0.0f, 0.0f, 1.0f );			//			↓
+	pVtx[ 0 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			// 頂点ごとの色の設定
+	pVtx[ 1 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
+	pVtx[ 2 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
+	pVtx[ 3 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
 
 	pVtx[ 0 ].tex = D3DXVECTOR2( 0.0f, 0.0f );
 	pVtx[ 1 ].tex = D3DXVECTOR2( 1.0f, 0.0f );
 	pVtx[ 2 ].tex = D3DXVECTOR2( 0.0f, 1.0f );
 	pVtx[ 3 ].tex = D3DXVECTOR2( 1.0f, 1.0f );
 
-	// 頂点情報セット
-	//------------------------------------
-	pVtx[ 4 ].pos.x = SCREEN_WIDTH / 2 - 200.0f;
-	pVtx[ 4 ].pos.y = 500.0f - 40.0f;	// 頂点の位置
-	pVtx[ 4 ].pos.z = 0.0f;												// 頂点の位置
-
-	pVtx[ 5 ].pos.x = SCREEN_WIDTH / 2 + 200.0f;
-	pVtx[ 5 ].pos.y = 500.0f - 40.0f;	// 頂点の位置
-	pVtx[ 5 ].pos.z = 0.0f;												// 頂点の位置
-
-	pVtx[ 6 ].pos.x = SCREEN_WIDTH / 2 - 200.0f;
-	pVtx[ 6 ].pos.y = 500.0f + 40.0f;	// 頂点の位置
-	pVtx[ 6 ].pos.z = 0.0f;												// 頂点の位置
-
-	pVtx[ 7 ].pos.x = SCREEN_WIDTH / 2 + 200.0f;
-	pVtx[ 7 ].pos.y = 500.0f + 40.0f;	// 頂点の位置
-	pVtx[ 7 ].pos.z = 0.0f;												// 頂点の位置
-
-	// パースペクティブコレクト
-	pVtx[ 4 ].rhw = 1.0f;
-	pVtx[ 5 ].rhw = 1.0f;
-	pVtx[ 6 ].rhw = 1.0f;
-	pVtx[ 7 ].rhw = 1.0f;	
-
-	// 色
-	//------------------------------------
-	pVtx[ 4 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			// 頂点ごとの色の設定
-	pVtx[ 5 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
-	pVtx[ 6 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
-	pVtx[ 7 ].col = D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f );			//			↓
-
-	pVtx[ 4 ].tex = D3DXVECTOR2( 0.0f, 0.0f );
-	pVtx[ 5 ].tex = D3DXVECTOR2( 1.0f, 0.0f );
-	pVtx[ 6 ].tex = D3DXVECTOR2( 0.0f, 1.0f );
-	pVtx[ 7 ].tex = D3DXVECTOR2( 1.0f, 1.0f );
 
 	// 解放
 	//------------------------------------
-	g_pVtxBuffResult -> Unlock();
+	g_Result.vtx -> Unlock();
 
 	// テクスチャの読み込み
 	//------------------------------------
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/result.jpg",	&g_pTextureResult[0]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/thanks.png", &g_pTextureResult[ 1 ]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/result.jpg", &g_Result.tex[RESULT_TEX_BG]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Player.jpg", &g_Result.tex[RESULT_TEX_PLAYER]);
+
+	// xファイルの読み込み
+	//------------------------------------
+	D3DXLoadMeshFromX("data/MODEL/PlayerU.x",		// 読み込むファイル名
+						D3DXMESH_SYSTEMMEM,							// 
+						pDevice,										// 
+						NULL,											// 
+						&g_Result.pBuffMatPlayer,			// 
+						NULL,											// 
+						&g_Result.nMatPlayer,			// 
+						&g_Result.pMeshPlayer );
 }
 
 //-----------------------------------------------
@@ -155,21 +134,40 @@ void InitResult()
 //-----------------------------------------------
 void UninitResult()
 {
-	for ( int nCnt = 0; nCnt < 4; nCnt++ )
+    // プレイヤーデータ終了
+    // メッシュ情報の解放と初期化
+	//------------------------------------
+	if ( g_Result.pMeshPlayer != NULL)
+	{ 
+		g_Result.pMeshPlayer ->Release();
+		g_Result.pMeshPlayer = NULL;
+	}
+	
+	// マテリアル情報の解放と初期化
+	//------------------------------------
+	if ( g_Result.pBuffMatPlayer != NULL)
+	{ 
+		g_Result.pBuffMatPlayer ->Release();
+		g_Result.pBuffMatPlayer = NULL;
+	}
+
+
+    // 背景終了
+	for ( int nCnt = 0; nCnt < RESULT_TEX_MAX; nCnt++ )
 	{
-		if (g_pTextureResult[ nCnt ] != NULL)
+		if (g_Result.tex[ nCnt ] != NULL)
 		{ // 使ったテクスチャの解放と初期化
 		  //------------------------------------
-			g_pTextureResult[ nCnt ] -> Release();
-			g_pTextureResult[ nCnt ] = NULL;
+			g_Result.tex[ nCnt ] -> Release();
+			g_Result.tex[ nCnt ] = NULL;
 		}
 	}
 
-	if (g_pVtxBuffResult != NULL)
+	if (g_Result.vtx != NULL)
 	{ // 頂点バッファの解放と初期化
 	  //------------------------------------
-		g_pVtxBuffResult->Release();
-		g_pVtxBuffResult = NULL;
+		g_Result.vtx->Release();
+		g_Result.vtx = NULL;
 	}
 
 	//StopSound();
@@ -183,11 +181,12 @@ void UpdateResult()
 	// エンターを押したら
 	//------------------------------------
 	// 遷移判定
-	if ( ( GetKeyboardTrigger(DIK_RETURN) /*|| GetGamePadTrigger( GAMEPAD_START ) || GetGamePadTrigger( GAMEPAD_A )*/ || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
+	if ( ( GetKeyboardTrigger(DIK_RETURN)  || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
 	{
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );
-		SetMode( MODE_RANKING );
+		SetMode( MODE_TITLE );
+		//SetMode( MODE_RANKING );
 
 		g_bResultFade = true;
 	}
@@ -209,7 +208,7 @@ void DrawResult()
 	// 頂点バッファをデータストリームにバインド
 	//-----------------------------------------
 	pDevice ->SetStreamSource(0,
-								g_pVtxBuffResult,
+								g_Result.vtx,
 								0,
 								sizeof(VERTEX_2D));	// 頂点データの間隔
 
@@ -217,22 +216,46 @@ void DrawResult()
 	//------------------------------------
 	pDevice -> SetFVF(FVF_VERTEX_2D);
 
-	for ( int i = 0; i < RESULT_MAX; i++ )
+	// テクスチャの設定
+	//------------------------------------
+	pDevice -> SetTexture( 0, g_Result.tex[RESULT_TEX_BG] );
+
+	// ポリゴンの描画
+	//------------------------------------
+	pDevice -> DrawPrimitive(D3DPT_TRIANGLESTRIP,	// プリミティブの種類
+									0,				// 読み込む最初の番号
+									2);				// 描画するプリミティブ数
+
+	// ワールド行列設定
+    D3DXMATRIX mtxWorld;
+    D3DXMatrixIdentity( &mtxWorld );
+	pDevice ->SetTransform(D3DTS_WORLD, &mtxWorld );
+
+	// 現在のマテリアル情報を保存
+    D3DMATERIAL9 matDef;
+	pDevice ->GetMaterial( &matDef );
+
+	// バッファへのポインタを取得
+	D3DXMATERIAL *pMat = (D3DXMATERIAL*)g_Result.pBuffMatPlayer ->GetBufferPointer();
+
+	// マテリアルの数だけループ
+	for (int nCntMat = 0; nCntMat < (int)g_Result.nMatPlayer; nCntMat++)
 	{
-		//// テクスチャの設定
-		////------------------------------------
-		//pDevice -> SetTexture(0, g_pTextureResult[ i ]);
-
-		// テクスチャの設定
-		//------------------------------------
-		pDevice -> SetTexture( 0, NULL );
-
-		// ポリゴンの描画
-		//------------------------------------
-		pDevice -> DrawPrimitive(D3DPT_TRIANGLESTRIP,	// プリミティブの種類
-										i * 4,				// 読み込む最初の番号
-										2);				// 描画するプリミティブ数
+		pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
+        if( pMat[nCntMat].pTextureFilename == NULL )
+        {
+		    pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+        }
+        else
+        {
+		    pDevice ->SetTexture( 0, g_Result.tex[RESULT_TEX_PLAYER] );							// テクスチャのセット
+        }
+		g_Result.pMeshPlayer ->DrawSubset( nCntMat );		// 描画
 	}
+			
+	// マテリアルを元に戻す
+	//------------------------------------
+	pDevice ->SetMaterial( &matDef );
 }
 
 //-----------------------------------------------
