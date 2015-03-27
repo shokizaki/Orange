@@ -196,7 +196,7 @@ int InitRanking(void){
 	{
 		for (int NextNum = 0; NextNum < (MAX_RANKING - 1 - i); NextNum++)
 		{
-			if (g_nRanking[NextNum] <= g_nRanking[(NextNum + 1)])
+			if (g_nRanking[NextNum] > g_nRanking[(NextNum + 1)])
 			{// “ü‚ê‘Ö‚¦
 				int OldScore;
 				OldScore = g_nRanking[NextNum];
