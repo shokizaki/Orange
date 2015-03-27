@@ -175,7 +175,7 @@ void UpdatePlayer( void )
 			g_bJump = false;
 		}
 
-		// 移動処理
+		// 移動処理（キーボード）
 		if ( GetKeyboardPress( DIK_A ) == true )
 		{
 			posPlayer.x -= 3.0f;
@@ -285,7 +285,7 @@ void UpdatePlayer( void )
 		}
 
 		// 色を変える処理
-		if ( GetPadElecomTrigger( PAD_4 ) == true )
+		if ( GetPadElecomTrigger( PAD_4 ) == true || GetKeyboardTrigger( DIK_RETURN ) == true )
 		{
 			// 赤キューブとの当たり判定
 			for ( int i = 0; i < MOVECUBE_MAX; i++ )
