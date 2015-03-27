@@ -24,11 +24,14 @@ int g_nRanking[MAX_RANKING];											//スコア履歴
 int g_nAnime;
 int A;
 bool g_bSound = false;													//再生したかどうか
+unsigned int g_nRankingFrameCount;
 
 /*******************************************************************************
 スコアの初期化処理
 *******************************************************************************/
 int InitRanking(void){
+
+    g_nRankingFrameCount = 0;
 
     // BGM
     PlaySound(RANKING_BGM);
@@ -305,10 +308,9 @@ void UpdateRanking(void){
 
     UpdateRankingBG();
 
-	// エンターを押したら
-	//------------------------------------
-	// 遷移判定
-	if ( ( GetKeyboardTrigger(DIK_RETURN) /*|| GetGamePadTrigger( GAMEPAD_START ) || GetGamePadTrigger( GAMEPAD_A )*/ || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
+    g_nRankingFrameCount++;
+    // 遷移判定
+	if ( ( GetKeyboardTrigger(DIK_RETURN) || g_nRankingFrameCount > 60 * 8 || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
 	{
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );

@@ -26,6 +26,7 @@ typedef struct tagTITLE
 {
     LPDIRECT3DVERTEXBUFFER9 vtx;		// 頂点バッファへのポインタ
     LPDIRECT3DTEXTURE9      tex;		// テクスチャへのポインタ
+    unsigned int            nCntFrame;  // 経過フレーム
 }TITLE;
 
 //-----------------------------------------------
@@ -47,6 +48,9 @@ bool g_bTitleFade = false;
 //-----------------------------------------------
 void InitTitle()
 {
+    // 経過フレームのリセット
+    g_Title.nCntFrame = 0;
+
     // BGM
 	PlaySound( TITLE_BGM );
 
@@ -147,6 +151,13 @@ void UninitTitle()
 void UpdateTitle()
 {
     UpdateTitlePreBtn();
+
+    g_Title.nCntFrame++;
+    if( g_Title.nCntFrame >= 60 * 60 )
+    {
+		SetFade( FADE_OUT, 60 );
+		SetMode( MODE_RANKING );
+    }
 
 	// 遷移判定
 	if ( ( GetKeyboardTrigger(DIK_RETURN) || GetPadElecomTrigger( PAD_4 ) ) && GetFade() == FADE_NONE)

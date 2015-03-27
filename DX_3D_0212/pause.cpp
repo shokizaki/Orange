@@ -88,10 +88,10 @@ void InitPause(void)
 
 	// テクスチャの読み込み
 	//------------------------------------
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/pause.png",			&g_pTexturePause[0]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/return_game.png",		&g_pTexturePause[1]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/retry.png",			&g_pTexturePause[2]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/return_title.png",		&g_pTexturePause[3]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Pause/pause.png",			&g_pTexturePause[0]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Pause/return_game.png",		&g_pTexturePause[1]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Pause/retry.png",			&g_pTexturePause[2]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Pause/return_title.png",		&g_pTexturePause[3]);
 }
 
 

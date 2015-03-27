@@ -44,7 +44,7 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{"data/SE/decision4.wav", false},			// Œˆ’è‰¹
 	{"data/SE/menuOn.wav", false},			// Œˆ’è‰¹
 	{"data/SE/cursor.wav", false},			// Œˆ’è‰¹
-	{"data/BGM/title3.wav", true},			// Œˆ’è‰¹
+	{"data/BGM/title.wav", true},			// Œˆ’è‰¹
 	{"data/BGM/game2.wav", true},			// Œˆ’è‰¹
 	{"data/BGM/result.wav", true},			// Œˆ’è‰¹
 	{"data/BGM/ranking2.wav", true},			// Œˆ’è‰¹

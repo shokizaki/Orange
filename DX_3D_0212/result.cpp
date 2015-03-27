@@ -178,10 +178,10 @@ void UninitResult()
 //-----------------------------------------------
 void UpdateResult()
 {
-	// ƒGƒ“ƒ^[‚ð‰Ÿ‚µ‚½‚ç
-	//------------------------------------
+    g_nFrameCount++;
+
 	// ‘JˆÚ”»’è
-	if ( ( GetKeyboardTrigger(DIK_RETURN)  || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) ) && GetFade() == FADE_NONE )
+	if ( ( GetKeyboardTrigger(DIK_RETURN)  || GetPadElecomTrigger( PAD_4 ) || GetPadElecomTrigger( PAD_10 ) || g_nFrameCount > 60 * 8 ) && GetFade() == FADE_NONE )
 	{
 		PlaySound( DESIDE4_SE );
 		SetFade( FADE_OUT, 60 );
