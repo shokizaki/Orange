@@ -80,6 +80,8 @@ bool GetPadElecomRelease( PAD_ELECOM nKey );				// リリース情報の取得
 bool GetPadElecomRepeat( PAD_ELECOM nKey );					// リピート情報の取得
 bool GetPadElecomCrossKeyDownTrigger( void );				// 十字キー情報の取得
 bool GetPadElecomCrossKeyUpTrigger( void );					// 十字キー情報の取得
+bool GetPadElecomCrossKeyRightTrigger( void );					// 十字キー情報の取得
+bool GetPadElecomCrossKeyLeftTrigger( void );					// 十字キー情報の取得
 int GetPadElecomStickRZ( void );							// 十字キー情報の取得
 int GetPadElecomStickRX( void );							// 十字キー情報の取得
 

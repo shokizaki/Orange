@@ -13,7 +13,6 @@
 //===================================================================
 #include "inputPad.h"
 #include "motion.h"
-#include "model.h"
 
 //===================================================================
 //
@@ -181,7 +180,6 @@ void UpdateGamePad( void )
 	//BYTE js.rgbButtons[256];
 	static int nCnt = 0;
 	HRESULT    hr;
-	MODEL_INFO *pPlayerInfo = GetModelInfo();
 	DIJOYSTATE js;
 
 	if ( NULL == g_pDInputDevicePad )
@@ -217,6 +215,10 @@ void UpdateGamePad( void )
 		//----------------------------------------------
 		g_pDInputDevicePad -> Acquire();
 	}
+
+	//PrintDebugProc("\n\n\n\n%d %d\n", g_js.lX, g_js.lY);
+	//PrintDebugProc("atan : %f\n", atan2f( g_js.lX, g_js.lY ));
+	//PrintDebugProc("右スティック : %d\n", g_js.lZ);
 
 	if (SUCCEEDED (g_pDInputDevicePad->GetDeviceState( sizeof( DIJOYSTATE ) , &js )) )
 	{
@@ -376,6 +378,30 @@ bool GetPadElecomCrossKeyUpTrigger( void )
 	{
 		g_bCrossKeyUpTriggerReturn = true;
 		return ( g_js.rgdwPOV[ 0 ] == 0 ) ? true: false;
+	}
+
+	return false;
+}
+
+// 十字キー情報の取得
+bool GetPadElecomCrossKeyRightTrigger( void )
+{
+	if ( g_bCrossKeyTrigger == true && g_bCrossKeyDownTriggerReturn == false )
+	{
+		g_bCrossKeyDownTriggerReturn = true;
+		return ( g_js.rgdwPOV[ 0 ] == 9000 ) ? true: false;
+	}
+
+	return false;
+}
+
+// 十字キー情報の取得
+bool GetPadElecomCrossKeyLeftTrigger( void )
+{
+	if ( g_bCrossKeyTrigger == true && g_bCrossKeyUpTriggerReturn == false )
+	{
+		g_bCrossKeyUpTriggerReturn = true;
+		return ( g_js.rgdwPOV[ 0 ] == 27000 ) ? true: false;
 	}
 
 	return false;

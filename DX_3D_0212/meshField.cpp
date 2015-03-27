@@ -13,7 +13,6 @@
 //
 //===============================================
 #include "meshField.h"
-#include "input.h"
 #include "camera.h"
 
 //===============================================
@@ -23,7 +22,7 @@
 //===============================================
 #define TEXTURE_MAX 	(1)			// 使用するテクスチャの数
 #define FIELD_MAX		(4)			// フィールドの最大数
-#define TEX_PASS		"data/TEXTURE/field000.jpg"
+#define TEX_PASS		"data/TEXTURE/field001.jpg"
 
 //-----------------------------------------------
 //  グローバル変数
@@ -319,7 +318,7 @@ void DrawMeshField()
 
 	// テクスチャの設定
 	//------------------------------------
-	pDevice -> SetTexture(0, g_pTextureMeshField[0]);
+	pDevice -> SetTexture(0, g_pTextureMeshField[ 0 ]);
 
 	// ポリゴンの描画
 	//------------------------------------

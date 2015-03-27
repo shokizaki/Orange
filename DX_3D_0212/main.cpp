@@ -8,27 +8,21 @@
 //  インクルードファイル
 //===================================================================
 #include "main.h"
-#include "field.h"
 #include "input.h"
-#include "model.h"
 #include "camera.h"
-#include "light.h"
 #include "meshField.h"
-#include "shadow.h"
-#include "billboard.h"
-#include "wall.h"
-#include "title.h"
-#include "game.h"
-#include "result.h"
-#include "tutorial.h"
-#include "number.h"
-#include "ranking.h"
+#include "light.h"
+#include "cube.h"
+#include "player.h"
+#include "gear.h"
+#include "Edit.h"
+#include "moveCube.h"
 
 //===================================================================
 //　マクロ定義
 //===================================================================
 #define CLASS_NAME  "DirectX"				// ウインドウクラスの名前
-#define WINDOW_NAME "リングルダッシュ"		// ウインドウの名前
+#define WINDOW_NAME "StageEditer"		// ウインドウの名前
 
 //===================================================================
 //  関数プロトタイプ宣言
@@ -372,44 +366,27 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//			   "terminal",
 	//			   &g_pD3DFont);
 
-	// サウンド初期化
-	//------------------------------------
-	if ( InitSound( hWnd )/* || InitSound( hWnd ) == E_FAIL || InitSound( hWnd ) == S_FALSE*/ )
-	{
-		DestroyWindow( hWnd );		// ウインドウを閉じる関数
-
-		return E_FAIL;
-	}
-
 	// 入力処理初期化処理
 	//------------------------------------
 	InitKeyboard( hInstance, hWnd );
-
-	InitGamePad(  hInstance, hWnd  );
-
-	// カメラの初期化
-	//------------------------------------
-	InitCamera();
-
-	// ライトの初期化
-	//------------------------------------
-	InitLight();
-
-	// フェードの初期化
-	//------------------------------------
-	InitFade();
-
-	// 数字描画に関する初期化処理
-	//------------------------------------
-	InitNumber();
 
 	// デバッグ初期化処理
 	//------------------------------------
 	InitDebugProc();
 
-	// モード遷移
-	//------------------------------------
-	ChangeScene();
+	InitCube();
+
+	InitMoveCube();
+
+	InitGear();
+
+	InitCamera();
+
+	InitPlayer();
+
+	InitMeshField( 5, 5, 200.0f, 200.0f );
+
+	InitLight();
 
 	return S_OK;
 }
@@ -438,84 +415,56 @@ void Uninit()
 	//------------------------------------
 	UninitMeshField();
 
-	// モデル終了処理
-	//------------------------------------
-	UninitModel();
-
-	// カメラ終了処理
-	//------------------------------------
-	UninitCamera();
-
 	// 入力終了処理
 	//------------------------------------
 	UninitKeyboard();
 
-	UninitGamePad();
-
-	// 影終了処理
+	// 終了処理
 	//------------------------------------
-	UninitShadow();
+	UninitCube();
 
-	// ビルボード終了処理
-	//------------------------------------
-	UninitBillboard();
+	UninitMoveCube();
 
-	// 壁終了処理
-	//------------------------------------
-	UninitWall();
-
-	// フェード終了
-	//------------------------------------
-	UninitFade();
-
-	UninitNumberTexture();
+	UninitGear();
 
 	UninitDebugProc();
+
+	UninitCamera();
+
+	UninitPlayer();
+
+	UninitLight();
 }
 
-void Update()
+// 更新処理
+void Update( void )
 {
-	switch ( GetMode() )
-	{
-	case MODE_TITLE:
-		UpdateTitle();
+	// エディット更新
+	UpdateEdit();
 
-		break;
+	// キューブ更新
+	UpdateCube();
 
-	case MODE_TUTORIAL:
-		UpdateTutorial();
+	UpdateMoveCube();
 
-		break;
+	// 歯車更新
+	UpdateGear();
 
-	case MODE_GAME:
-		UpdateGame();
+	// プレイヤー更新
+	UpdatePlayer();
 
-		break;
-
-	case MODE_RANKING:
-		UpdateRanking();
-
-		break;
-
-	case MODE_RESULT:
-		UpdateResult();
-
-		break;
-	}
-
-	// フェードの更新
-	//------------------------------------
-	UpdateFade();
+	// メッシュフィールド更新
+	UpdateMeshField();
 
 	// 入力処理の更新
 	//------------------------------------
 	UpdateKeyboard();
 
-	UpdateGamePad();
-
 	// デバッグ描画更新処理
 	//------------------------------------
 	UpdateDebugProc();
+
+	UpdateCamera();
 }
 
 void Draw()
@@ -534,33 +483,22 @@ void Draw()
 	if(SUCCEEDED(g_pD3DDevice -> BeginScene()))
 	{ // 描画したいものをここに書く
 		
-		switch ( GetMode() )
-		{
-		case MODE_TITLE:
-			DrawTitle();
+		// プレイヤー描画
+		DrawPlayer();
 
-			break;
+		// メッシュフィールド描画
+		DrawMeshField();
 
-		case MODE_TUTORIAL:
-			DrawTutorial();
+		// キューブ描画
+		DrawCube();
 
-			break;
+		DrawMoveCube();
 
-		case MODE_GAME:
-			DrawGame();
+		// 歯車描画
+		DrawGear();
 
-			break;
-
-		case MODE_RANKING:
-			DrawRanking();
-
-			break;
-
-		case MODE_RESULT:
-			DrawResult();
-
-			break;
-		}
+		// エディット描画
+		DrawEdit();
 
 		// FPS表示関数
 		//------------------------------------
@@ -570,10 +508,6 @@ void Draw()
 		//------------------------------------
 		DrawDebugProc();
 //#endif
-
-		// フェードの描画
-		//------------------------------------
-		DrawFade();
 
 		// 描画の終了
 		//------------------------------------

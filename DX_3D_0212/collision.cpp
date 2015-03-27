@@ -10,128 +10,16 @@
 #include "collision.h"
 
 //-----------------------------------------------
-// ‰~‚Æ‰~‚Ì“–‚½‚è”»’è
-//-----------------------------------------------
-bool ColCircle( COL_RECT *a, COL_RECT *b )
-{
-	// “ñ‚Â‚ÌÀ•Wix,yj‚Ì‹——£iâ‘Î’lj‚ðŒvŽZ
-	//--------------------------------------------------
-	float fLengthX = (a ->pos.x - b ->pos.x);	// XÀ•W‚Ì‹——£
-	float fLengthY = (a ->pos.z - b ->pos.z);	// YÀ•W‚Ì‹——£
-
-	// ‰~‚Æ‰~‚Ì‹——£‚ðŒvŽZ
-	//------------------------------------
-	float fLength  = sqrtf( ( fLengthX * fLengthX ) + ( fLengthY * fLengthY ) );
-
-	float aRad = sqrtf( ( a ->harfSize.x * a ->harfSize.x ) + ( a ->harfSize.z * a ->harfSize.z ) );
-	float bRad = sqrtf( ( b ->harfSize.x * b ->harfSize.x ) + ( b ->harfSize.z * b ->harfSize.z ) );
-
-	// “–‚½‚è”»’è
-	//------------------------------------
-	if ( fLength <= aRad + bRad )
-	{
-		// ‰~‚Æ‰~‚Ì‹——£‚ªA“ñ‚Â‚Ì‰~‚Ì”¼Œa‚ð‘«‚µ‚½‚à‚Ì‚æ‚è¬‚³‚©‚Á‚½‚ç“–‚½‚è
-		//------------------------------------------------------------------
-		return true;
-	}
-	else
-	{
-		// “–‚½‚Á‚Ä‚¢‚È‚¢
-		//-----------------------------------
-		return false;	
-	}
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è
+// ƒIƒuƒWƒFƒNƒg“¯Žm‚Ì“–‚½‚è”»’è
 // ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
+//  COL_RECTŒ^‚Ì•Ï” * 2
 //-----------------------------------------------
-bool ColRect( COL_RECT *a, COL_RECT *b )
+bool ColRectXY( COL_RECT *a, COL_RECT *b )
 {
-	// “–‚½‚è”»’è
-	if (   (a ->pos.x - a->harfSize.x) <= (b ->pos.x + b ->harfSize.x) && (a ->pos.z - a ->harfSize.z) <= (b ->pos.z + b ->harfSize.z)
-		&& (a ->pos.x + a->harfSize.x) >= (b ->pos.x - b ->harfSize.x) && (a ->pos.z - a ->harfSize.z) <= (b ->pos.z + b ->harfSize.z)  
-		&& (a ->pos.x - a->harfSize.x) <= (b ->pos.x + b ->harfSize.x) && (a ->pos.z + a ->harfSize.z) >= (b ->pos.z - b ->harfSize.z)  
-		&& (a ->pos.x + a->harfSize.x) >= (b ->pos.x - b ->harfSize.x) && (a ->pos.z + a ->harfSize.z) >= (b ->pos.z - b ->harfSize.z) )
-	{
-		return true;	//“–‚½‚Á‚Ä‚é
-	}
-	//else
-	{
-		return false;	// “–‚½‚Á‚Ä‚È‚¢
-	}
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è( XÀ•W )
-// ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
-//-----------------------------------------------
-bool ColRectX_Right( COL_RECT *a, COL_RECT *b )
-{
-	if ( ( a ->pos.x + a ->harfSize.x ) >= ( b ->pos.x - b ->harfSize.x ) )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è
-// ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
-//-----------------------------------------------
-bool ColRectX_Left( COL_RECT *a, COL_RECT *b )
-{
-	if ( ( a ->pos.x - a ->harfSize.x ) <= ( b ->pos.x + b ->harfSize.x ) )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è
-// ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
-//-----------------------------------------------
-bool ColRectZ_Depth( COL_RECT *a, COL_RECT *b )
-{
-	if ( ( a ->pos.z + a ->harfSize.z ) >= ( b ->pos.z - b ->harfSize.z ) )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è
-// ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
-//-----------------------------------------------
-bool ColRectZ_Front( COL_RECT *a, COL_RECT *b )
-{
-	if ( ( a ->pos.z - a ->harfSize.z ) <= ( b ->pos.z + b ->harfSize.z ) )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------
-// ‹éŒ`‚Æ‹éŒ`‚Ì“–‚½‚è”»’è( ZÀ•W )
-// ˆø”F
-// ’†SÀ•Wx,y * 2A•‚PA‚‚³‚PA•‚QA‚‚³‚Q
-//-----------------------------------------------
-bool ColRectZ( COL_RECT *a, COL_RECT *b )
-{
-	if ( (a ->pos.z - a->harfSize.z) <= (b ->pos.z + b ->harfSize.z) && (a ->pos.z + a->harfSize.z) >= (b ->pos.z - b ->harfSize.z)
-	&&	 ( ( a ->pos.z > b ->pos.z ) || ( a ->pos.z < b ->pos.z ) ) )
+	if ( a ->pos.x + a ->harfSize.x >= b ->pos.x - b ->harfSize.x
+	&&	 a ->pos.x - a ->harfSize.x <= b ->pos.x + b ->harfSize.x
+	&&	 a ->pos.y + a ->harfSize.y >= b ->pos.y - b ->harfSize.y
+	&&	 a ->pos.y - a ->harfSize.y <= b ->pos.y + b ->harfSize.y )
 	{
 		return true;
 	}

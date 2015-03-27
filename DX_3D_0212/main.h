@@ -22,11 +22,7 @@
 #include <string.h>
 
 #include "debugproc.h"
-#include "fade.h"
 #include "input.h"
-#include "mode.h"
-#include "collision.h"
-#include "sound.h"
 #include "inputPad.h"
 
 //===================================================================

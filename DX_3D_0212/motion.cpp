@@ -14,11 +14,17 @@
 #include "motion.h"
 #include "camera.h"
 
-//===============================================
+//=========================================================
 //
+// [ 概要 ]
 // モデルのモーションに関する初期化
+// 
+// [ in ]
+// pModel    ・・・ MODEL_INFO型変数のポインタ
+// pFileName ・・・ 読み込みたいファイル（テキスト）名、
+//                  又は、ファイル名までのパス
 //
-//===============================================
+//=========================================================
 void InitModelMotionEx( MODEL_INFO *pModel, char *pFileName )
 {
 	// ファイルのオープン
@@ -237,11 +243,14 @@ void InitModelMotionEx( MODEL_INFO *pModel, char *pFileName )
 	}
 }
 
-//===============================================
+//=========================================================
 //
 // モデルのモーションに関する終了
 //
-//===============================================
+// [ in ]
+// pModel ・・・ MODEL_INFO型変数のポインタ
+// 
+//=========================================================
 void UninitModelMotion( MODEL_INFO *pModel )
 {
 	for (int nCnt = 0; nCnt < pModel ->nNumParts; nCnt++)
@@ -264,14 +273,17 @@ void UninitModelMotion( MODEL_INFO *pModel )
 	}
 }
 
-//===============================================
+//=========================================================
 //
 // モデルのモーションに関する更新
 //
-//===============================================
+// [ in ]
+// pModel ・・・ MODEL_INFO型変数のポインタ
+// 
+//=========================================================
 void UpdateModelMotion( MODEL_INFO *pModel )
 {
-	// ループするモーションがループするかどうか、調べた判定
+	// モーションがループするかどうか / 調べた判定
 	if ( pModel ->aMotion[ pModel ->status ].bLoop == false && pModel ->bMotion == false )
 	{
 		pModel ->bMotion = true;
@@ -279,6 +291,7 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 		pModel ->nKey = 0;
 	}
 
+	// ループしないモーションでない場合
 	if ( pModel ->bMotion == false )
 	{
 		if ( pModel ->status != pModel ->statusOld )
@@ -288,6 +301,7 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 		}
 	}
 
+	// モーションの更新
 	for (int nCnt = 0; nCnt < pModel ->nNumParts; nCnt++)
 	{
 		if ( pModel ->nFrameCount == 0 )
@@ -305,9 +319,9 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 		pModel ->targetRot[ nCnt ].y += pModel ->rotDevide[ nCnt ].y;
 		pModel ->targetRot[ nCnt ].z += pModel ->rotDevide[ nCnt ].z;
 
-		pModel ->targetPos[ nCnt ].x += pModel ->posDevide[ nCnt ].x;
-		pModel ->targetPos[ nCnt ].y += pModel ->posDevide[ nCnt ].y;
-		pModel ->targetPos[ nCnt ].z += pModel ->posDevide[ nCnt ].z;
+		pModel ->posParts[ nCnt ].x += pModel ->posDevide[ nCnt ].x;
+		pModel ->posParts[ nCnt ].y += pModel ->posDevide[ nCnt ].y;
+		pModel ->posParts[ nCnt ].z += pModel ->posDevide[ nCnt ].z;
 	}
 
 	// フレームカウント増加
@@ -329,9 +343,6 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 			}
 			else
 			{
-				// キー番号を最後のキーで固定
-				//pModel ->aMotion[ pModel ->status ].nKey = pModel ->aMotion[ pModel ->status ].nNumKey - 1;
-				
 				pModel ->bMotion = false;
 				
 				// ジャンプだったら
@@ -339,10 +350,10 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 				{
 					pModel ->nKey = 0;			// キーを最初にもどす
 					pModel ->nFrameCount = 0;	// カウントを元にもどす
-					pModel ->status = NEUTRAL;
-					//pModel ->status = RANDING;
+					//pModel ->status = NEUTRAL;
+					pModel ->status = RANDING;
 
-					//pModel ->bMotion = true;
+					pModel ->bMotion = true;
 				}
 				else
 				{
@@ -353,29 +364,23 @@ void UpdateModelMotion( MODEL_INFO *pModel )
 			}
 		}
 	}
-
-	//デバッグ表示
-	//PrintDebugProc("/-------------------------\n");
-	//PrintDebugProc("MOTION : NEUTRAL\n");
-	//PrintDebugProc("LOOP   : ON\n");
-	//PrintDebugProc("KEY    : %d / %d\n", pModel ->nKey, pModel ->aMotion[ pModel ->status ].nNumKey);
-	//PrintDebugProc("FRAME  : %d / %d\n", pModel ->nFrameCount, pModel ->aMotion[ pModel ->status ].nFrame[ pModel ->nKey ]);
-	//PrintDebugProc("-------------------------/\n\n");
 }
 
-//===============================================
+//=========================================================
 //
-// モデルの描画
+// モデルのモーション付き描画
 //
-//===============================================
+// [ in ]
+// pModel ・・・ MODEL_INFO型変数のポインタ
+// 
+//=========================================================
 void DrawModelMotion( MODEL_INFO *pModel )
 {
 	// ローカル変数
 	//------------------------------------
 	LPDIRECT3DDEVICE9 pDevice;						// デバイスオブジェクト
 	D3DXMATRIX mtxScl, mtxRot, mtxTranslate;		// 計算用
-	D3DXMATRIX pMtxWorld;
-	D3DXMATERIAL *pMat;								// 
+	D3DXMATERIAL *pMat;								// マテリアル情報を取得する変数
 	D3DMATERIAL9 matDef;							// 元のマテリアル情報
 	char strDest[256] = "data/TEXTURE/";
 
@@ -383,16 +388,16 @@ void DrawModelMotion( MODEL_INFO *pModel )
 	//------------------------------------
 	pDevice = GetDevice();
 
+	// カメラのセット
 	SetCamera();
 
+	// それぞれのパーツの行列計算と描画開始
 	for (int nCnt = 0; nCnt < pModel ->nNumParts; nCnt++)
 	{
-		// ワールドマトリックスの設定
-		//------------------------------------
-		D3DXMatrixIdentity( &pModel ->mtxWorld[ nCnt ] );			// フォーマットの初期化
-		D3DXMatrixIdentity( &mtxScl );
-		D3DXMatrixIdentity( &mtxRot );
-		D3DXMatrixIdentity( &mtxTranslate );
+		D3DXMatrixIdentity( &pModel ->mtxWorld[ nCnt ] );	// フォーマットの初期化
+		D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
+		D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
+		D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
 
 		// スケールを反映
 		D3DXMatrixScaling(&mtxScl, pModel ->scl[ nCnt ].x, pModel ->scl[ nCnt ].y, pModel ->scl[ nCnt ].z);
@@ -425,9 +430,9 @@ void DrawModelMotion( MODEL_INFO *pModel )
 		pDevice ->SetTransform(D3DTS_WORLD, &pModel ->mtxWorld[ nCnt ]);
 
 		// 現在のマテリアル情報を保存
-		//------------------------------------
 		pDevice ->GetMaterial( &matDef );
 
+		// バッファへのポインタを取得
 		pMat = (D3DXMATERIAL*)pModel ->pBuffMatModel[ nCnt ] ->GetBufferPointer();
 
 		/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
@@ -440,8 +445,8 @@ void DrawModelMotion( MODEL_INFO *pModel )
 		for (int nCntMat = 0; nCntMat < (int)pModel ->numMatModel[ nCnt ]; nCntMat++)
 		{
 			pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-			pDevice ->SetTexture( 0, NULL );								// テクスチャのセット
-			pModel ->pMeshModel[ nCnt ] ->DrawSubset( nCntMat );	// 描画
+			pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+			pModel ->pMeshModel[ nCnt ] ->DrawSubset( nCntMat );		// 描画
 		}
 			
 		// マテリアルを元に戻す

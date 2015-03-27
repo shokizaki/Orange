@@ -12,7 +12,6 @@
 //
 //===============================================
 #include "debugproc.h"
-#include "input.h"
 
 //===============================================
 //
@@ -20,7 +19,8 @@
 //
 //===============================================
 LPD3DXFONT g_pD3DFont = NULL;	// 
-char g_aStrDebug[1024];
+char g_aStrDebug[2048];
+bool g_bFlagDebug = true;
 
 void InitDebugProc(void)
 {
@@ -47,6 +47,9 @@ void InitDebugProc(void)
 
 	// ゼロで中身を初期化
 	memset(&g_aStrDebug[0], 0, sizeof g_aStrDebug);
+
+	// グローバル変数初期化
+	g_bFlagDebug = true;
 }
 
 void UninitDebugProc(void)
@@ -65,20 +68,18 @@ void UpdateDebugProc(void)
 
 void DrawDebugProc(void)
 {
-	static bool bFlag = true;
-
 	RECT rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
-	if ( GetKeyboardTrigger( DIK_F1 ) && bFlag == false )
+	if ( GetKeyboardTrigger( DIK_F1 ) && g_bFlagDebug == false )
 	{
-		bFlag = true;
+		g_bFlagDebug = true;
 	}
-	else if ( GetKeyboardTrigger( DIK_F1 ) && bFlag == true )
+	else if ( GetKeyboardTrigger( DIK_F1 ) && g_bFlagDebug == true )
 	{
-		bFlag = false;
+		g_bFlagDebug = false;
 	}
 
-	if ( bFlag == false )
+	if ( g_bFlagDebug == true )
 	{
 		// テキストの描画
 		//------------------------------------
