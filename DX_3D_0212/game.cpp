@@ -18,6 +18,7 @@
 #include "moveCube.h"
 #include "gear.h"
 #include "Edit.h"
+#include "pause.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -65,6 +66,9 @@ void InitGame()
 	// ライト初期化
 	InitLight();
 
+	// ポーズ初期化
+	InitPause();
+
 	// メニューの初期化
 	//------------------------------------
 	//InitMenu();
@@ -98,6 +102,9 @@ void UninitGame()
 
 	// 歯車初終了
 	UninitGear();
+
+	// ポーズ終了
+	UninitPause();
 	
 	// メニューの終了
 	//------------------------------------
@@ -109,6 +116,23 @@ void UninitGame()
 // ゲーム更新処理
 void UpdateGame()
 {
+	if ( GetKeyboardTrigger( DIK_P ) == true && g_bMenu == false )
+	{
+		g_bMenu = true;
+	}
+	else if ( GetKeyboardTrigger( DIK_P ) == true && g_bMenu == true )
+	{
+		g_bMenu = false;
+	}
+
+	if ( g_bMenu == true )
+	{
+		// ポーズ更新
+		UpdatePause();
+
+		return;
+	}
+
 	// エディット更新
 	UpdateEdit();
 
@@ -176,13 +200,11 @@ void DrawGame()
 	//------------------------------------
 	//DrawUI();
 
-	//// メニューがONだったら
-	//if ( g_bMenu == true )
-	//{
-	//	// メニューの描画
-	//	//------------------------------------
-	//	DrawMenu();
-	//}
+	if ( g_bMenu == true )
+	{
+		// ポーズ更新
+		DrawPause();
+	}
 }
 
 //===============================================
@@ -207,5 +229,4 @@ bool GetMenu( void )
 void SetMenu( void )
 {
 	g_bMenu = false;
-	g_bUnintMenu = false;
 }

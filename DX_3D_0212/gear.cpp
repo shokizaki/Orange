@@ -7,6 +7,7 @@
 //------ インクルードファイル ------
 #include "gear.h"
 #include "camera.h"
+#include "player.h"
 
 //------ マクロ定義 ------
 #define GEAR_WIDTH ( 15.0f )
@@ -163,54 +164,58 @@ void DrawGear( void )
 	// カメラのセット
 	SetCamera();
 
-	// それぞれのパーツの行列計算と描画開始
-	for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
+	// シートが張られてたら
+	if ( GetRed() == true )
 	{
-		if ( g_aGear[ nCnt ].bUse == true )
+		// それぞれのパーツの行列計算と描画開始
+		for (int nCnt = 0; nCnt < GEAR_MAX; nCnt++)
 		{
-			D3DXMatrixIdentity( &g_aGear[ nCnt ].mtxWorld );	// フォーマットの初期化
-			D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
-
-			// スケールを反映
-			D3DXMatrixScaling(&mtxScl, g_aGear[ nCnt ].scl.x, g_aGear[ nCnt ].scl.y, g_aGear[ nCnt ].scl.z);
-			D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxScl);
-
-			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aGear[ nCnt ].rot.y, g_aGear[ nCnt ].rot.x, g_aGear[ nCnt ].rot.z);
-			D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxRot);
-
-			// 位置を反映
-			D3DXMatrixTranslation(&mtxTranslate, g_aGear[ nCnt ].pos.x, g_aGear[ nCnt ].pos.y, g_aGear[ nCnt ].pos.z);
-			D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxTranslate);
-
-			// 設定
-			pDevice ->SetTransform(D3DTS_WORLD, &g_aGear[ nCnt ].mtxWorld);
-
-			// 現在のマテリアル情報を保存
-			pDevice ->GetMaterial( &matDef );
-
-			// バッファへのポインタを取得
-			pMat = (D3DXMATERIAL*)g_aGear[ nCnt ].pBuffMatModel ->GetBufferPointer();
-
-			/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
-
-			strcat(strDest, strSrc);
-
-			D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
-			
-			// マテリアルの数だけループ
-			for (int nCntMat = 0; nCntMat < (int)g_aGear[ nCnt ].numMatModel; nCntMat++)
+			if ( g_aGear[ nCnt ].bUse == true )
 			{
-				pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-				pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
-				g_aGear[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
-			}
+				D3DXMatrixIdentity( &g_aGear[ nCnt ].mtxWorld );	// フォーマットの初期化
+				D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
+
+				// スケールを反映
+				D3DXMatrixScaling(&mtxScl, g_aGear[ nCnt ].scl.x, g_aGear[ nCnt ].scl.y, g_aGear[ nCnt ].scl.z);
+				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxScl);
+
+				// 向きを反映
+				D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aGear[ nCnt ].rot.y, g_aGear[ nCnt ].rot.x, g_aGear[ nCnt ].rot.z);
+				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxRot);
+
+				// 位置を反映
+				D3DXMatrixTranslation(&mtxTranslate, g_aGear[ nCnt ].pos.x, g_aGear[ nCnt ].pos.y, g_aGear[ nCnt ].pos.z);
+				D3DXMatrixMultiply(&g_aGear[ nCnt ].mtxWorld, &g_aGear[ nCnt ].mtxWorld, &mtxTranslate);
+
+				// 設定
+				pDevice ->SetTransform(D3DTS_WORLD, &g_aGear[ nCnt ].mtxWorld);
+
+				// 現在のマテリアル情報を保存
+				pDevice ->GetMaterial( &matDef );
+
+				// バッファへのポインタを取得
+				pMat = (D3DXMATERIAL*)g_aGear[ nCnt ].pBuffMatModel ->GetBufferPointer();
+
+				/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
+
+				strcat(strDest, strSrc);
+
+				D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
 			
-			// マテリアルを元に戻す
-			//------------------------------------
-			pDevice ->SetMaterial( &matDef );
+				// マテリアルの数だけループ
+				for (int nCntMat = 0; nCntMat < (int)g_aGear[ nCnt ].numMatModel; nCntMat++)
+				{
+					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
+					pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+					g_aGear[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
+				}
+			
+				// マテリアルを元に戻す
+				//------------------------------------
+				pDevice ->SetMaterial( &matDef );
+			}
 		}
 	}
 }
@@ -240,7 +245,9 @@ int SetGear( D3DXVECTOR3 pos )
 			g_aGear[ i ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 			// 当たり判定用
-			g_aGear[ i ].rect.pos = pos;
+			g_aGear[ i ].rect.pos.x = pos.x;
+			g_aGear[ i ].rect.pos.y = pos.y - 20.0f;
+			g_aGear[ i ].rect.pos.z = pos.z;
 			g_aGear[ i ].rect.harfSize = D3DXVECTOR3( GEAR_WIDTH, GEAR_HEIGHT, GEAR_HEIGHT );
 
 			// モデル情報をコピー
@@ -311,7 +318,9 @@ void EditGear( void )
 			g_aGear[ g_nMoveGear ].pos.y += -40.0f;
 		}
 
-		g_aGear[ g_nMoveGear ].rect.pos = g_aGear[ g_nMoveGear ].pos;
+		g_aGear[ g_nMoveGear ].rect.pos.x = g_aGear[ g_nMoveGear ].pos.x;
+		g_aGear[ g_nMoveGear ].rect.pos.y = g_aGear[ g_nMoveGear ].pos.y - 20.0f;
+		g_aGear[ g_nMoveGear ].rect.pos.z = g_aGear[ g_nMoveGear ].pos.z;
 		g_aGear[ g_nMoveGear ].rot.y += 0.025f;
 	}
 

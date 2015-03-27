@@ -23,11 +23,14 @@
 #define MOVE_VAL ( 3.0f )
 #define GRAVITY_VAL ( 0.5f )
 
+#define PLAYER_TEX_MAX ( 1 )
+
 //------ グローバル変数 ------
 D3DXMATRIX mtxWorldPlayer;				// ワールドマトリックス
 LPD3DXMESH pMeshModelPlayer;			// メッシュ情報へのポインタ
 LPD3DXBUFFER pBuffMatModelPlayer;		// マテリアル情報へのポインタ
 DWORD numMatModelPlayer;				// マテリアルの数
+LPDIRECT3DTEXTURE9	g_pTexturePlayer[ PLAYER_TEX_MAX ]; 		// テクスチャへのポインタ
 
 D3DXVECTOR3 posPlayer;		// プレイヤーの位置
 D3DXVECTOR3 posPlayerOld;	// プレイヤーの前回位置	
@@ -63,7 +66,7 @@ void InitPlayer( void )
 	{
 		// xファイルの読み込み
 		//------------------------------------
-		D3DXLoadMeshFromX("data/MODEL/sphere.x",		// 読み込むファイル名
+		D3DXLoadMeshFromX("data/MODEL/player.x",		// 読み込むファイル名
 						  D3DXMESH_SYSTEMMEM,							// 
 						  pDevice,										// 
 						  NULL,											// 
@@ -72,6 +75,13 @@ void InitPlayer( void )
 						  &numMatModelPlayer,			// 
 						  &pMeshModelPlayer );
 	}
+
+	// テクスチャポインタの初期化
+	g_pTexturePlayer[ 0 ] = NULL;
+
+	// テクスチャの読み込み
+	//------------------------------------
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Player.jpg", &g_pTexturePlayer[ 0 ]);
 
 	// グローバル変数の初期化
 	sclPlayer = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ); 
@@ -182,6 +192,26 @@ void UpdatePlayer( void )
 				}
 			}
 		}
+		else
+		{
+			// 歯車との当たり判定
+			for ( int i = 0; i < GEAR_MAX; i++ )
+			{
+				if ( ( pGear + i ) ->bUse == true )
+				{
+					if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
+					{
+						//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
+						{
+							posPlayer.y = posPlayerOld.y;
+							rectPlayer.pos.y = posPlayer.y;
+							fJumpVal = 0.0f;
+							g_bJump = false;
+						}
+					}
+				}
+			}
+		}
 
 		// 地面判定
 		if ( posPlayer.y + PLAYER_HEIGHT <= PLAYER_HEIGHT )
@@ -267,6 +297,24 @@ void UpdatePlayer( void )
 				}
 			}
 		}
+		else
+		{
+			// 歯車との当たり判定
+			for ( int i = 0; i < GEAR_MAX; i++ )
+			{
+				if ( ( pGear + i ) ->bUse == true )
+				{
+					if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
+					{
+						//if ( GetKeyboardTrigger( DIK_RETURN ) == true )
+						{
+							posPlayer.x = posPlayerOld.x;
+							rectPlayer.pos.x = posPlayer.x;
+						}
+					}
+				}
+			}
+		}
 
 		// ジャンプ処理
 		if ( ( GetKeyboardTrigger( DIK_SPACE ) == true || GetPadElecomTrigger( PAD_3 ) ) && g_bJump == false )
@@ -282,27 +330,7 @@ void UpdatePlayer( void )
 			rectPlayer.pos = posPlayer;
 		}
 
-		// 歯車との当たり判定
-		for ( int i = 0; i < GEAR_MAX; i++ )
-		{
-			if ( ( pGear + i ) ->bUse == true )
-			{
-				if ( ColRectXY( &rectPlayer, &( pGear + i ) ->rect ) == true )
-				{
-					if ( GetKeyboardTrigger( DIK_RETURN ) == true )
-					{
-						if ( ( pGear + i ) ->bRotation == false )
-						{
-							SetGearRotation( i, true );
-						}
-						else
-						{
-							SetGearRotation( i, false );
-						}
-					}
-				}
-			}
-		}
+
 
 		// 色を変える処理
 		if ( GetPadElecomTrigger( PAD_4 ) == true || GetKeyboardTrigger( DIK_RETURN ) == true )
@@ -320,7 +348,7 @@ void UpdatePlayer( void )
 						// 現在の状態を保存
 						work = rectPlayer;
 
-						if ( GetGamePadCrossKeyY() < 0  )
+						if ( GetGamePadCrossKeyY() < 0 )
 						{
 							work.pos.y -= 10.0f;
 						}
@@ -422,6 +450,12 @@ void UpdatePlayer( void )
 			}
 		}
 
+		//
+		if ( GetKeyboardPress( DIK_RIGHT ) )
+		{
+			rotPlayer.y += 0.01f;
+		}
+
 		PrintDebugProc("[ プレイヤー位置 ] %f %f %f\n", posPlayer.x, posPlayer.y, posPlayer.z);
 	}
 }
@@ -481,13 +515,21 @@ void DrawPlayer( void )
 	for (int nCntMat = 0; nCntMat < (int)numMatModelPlayer; nCntMat++)
 	{
 		pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-		pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+		pDevice ->SetTexture( 0, g_pTexturePlayer[ 0 ] );							// テクスチャのセット
 		pMeshModelPlayer ->DrawSubset( nCntMat );		// 描画
 	}
 			
 	// マテリアルを元に戻す
 	//------------------------------------
 	pDevice ->SetMaterial( &matDef );
+}
+
+//-----------------------------------------------
+// プレイヤー位置取得処理
+//-----------------------------------------------
+D3DXVECTOR3 GetPlayerPos( void )
+{
+	return posPlayer;
 }
 
 // デバッグ用
