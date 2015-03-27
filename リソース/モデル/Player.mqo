@@ -2,24 +2,23 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos 2.3493 -13.0375 160.9808
+	pos 2.3493 -13.0375 399.1382
 	lookat 0.0000 0.0000 0.0000
-	head -0.9000
-	pich 0.0608
+	head 0.0500
+	pich 0.1108
 	bank 0.0000
-	ortho 1
-	zoom2 11.6135
-	zoom_pers 47.5687
+	ortho 0
+	zoom2 19.1854
 	amb 0.250 0.250 0.250
 	dirlights 1 {
 		light {
-			dir 0.408 0.408 0.816
+			dir -0.768 0.600 0.223
 			color 1.000 1.000 1.000
 		}
 	}
 }
 Material 2 {
-	"tomato" col(0.502 1.000 0.000 1.000) dif(1.000) amb(1.000) emi(0.000) spc(0.450) power(17.00) tex("C:\Users\anzuy_000\Dropbox\_作業用\TGS_20150327_No5\リソース\テクスチャ\Player.jpg")
+	"tomato" col(0.502 1.000 0.000 1.000) dif(1.000) amb(1.000) emi(0.500) spc(0.450) power(17.00) tex("data\TEXTURE\Player.jpg")
 	"heta" col(0.000 0.459 0.043 1.000) dif(1.000) amb(1.000) emi(0.190) spc(0.000) power(0.00)
 }
 Object "body" {
