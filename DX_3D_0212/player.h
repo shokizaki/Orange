@@ -38,4 +38,6 @@ void UpdatePlayer( void );
 //-----------------------------------------------
 void DrawPlayer( void );
 
+bool GetRed( void );
+
 #endif

@@ -40,25 +40,29 @@ void InitCube( void )
 		g_aCube[ i ].bUse = false;
 	}
 
-	//{
-	//	// xファイルの読み込み
-	//	//------------------------------------
-	//	D3DXLoadMeshFromX("data/MODEL/cube.x",		// 読み込むファイル名
-	//					  D3DXMESH_SYSTEMMEM,							// 
-	//					  pDevice,										// 
-	//					  NULL,											// 
-	//					  &pBuffMatModelInit,			// 
-	//					  NULL,											// 
-	//					  &numMatModelInit,			// 
-	//					  &pMeshModelInit );
-	//}
-
 	// グローバル変数の初期化
 	g_bMoveCube = false;
 	g_nMoveCube = 0;
 	//g_bEdit = false;
 	g_nCreateCubeNum = 0;
 	g_bCubeSelect = false;
+
+	// 位置読み込み
+	// ファイルの読み込み開始
+	FILE *fp = fopen( "CubePos.txt", "rt" );
+	char strWork[ 256 ];
+	D3DXVECTOR3 fWork;
+	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
+	{
+		// 一行読み込む
+		fscanf( fp, "%s = %f %f %f" , strWork, &fWork.x, &fWork.y, &fWork.z );
+
+		if ( strcmp( strWork, "POS" ) == 0 )
+		{
+			// 白キューブ生成
+			SetCube( fWork );
+		}
+	}
 }
 
 //-----------------------------------------------
@@ -97,38 +101,38 @@ void UpdateCube( void )
 	g_aCube[ 0 ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 	{
-		// キューブ位置の保存
-		if ( GetKeyboardTrigger( DIK_F2 ) == true )
-		{
-			// ファイルのオープン
-			FILE *fp = fopen( "CubePositionInfo.txt", "wt" );
+		//// キューブ位置の保存
+		//if ( GetKeyboardTrigger( DIK_F2 ) == true )
+		//{
+		//	// ファイルのオープン
+		//	FILE *fp = fopen( "CubePositionInfo.txt", "wt" );
 
-			for (int nCnt = 0; nCnt < CUBE_MAX; nCnt++)
-			{
-				if ( g_aCube[ nCnt ].bUse == true )
-				{
-					char workChar[ 256 ] = "POS = ";
-					char workFloatTrans[ 256 ];
+		//	for (int nCnt = 0; nCnt < CUBE_MAX; nCnt++)
+		//	{
+		//		if ( g_aCube[ nCnt ].bUse == true )
+		//		{
+		//			char workChar[ 256 ] = "POS = ";
+		//			char workFloatTrans[ 256 ];
 
-					// 位置をワークに突っ込む
-					sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.x );
-					strcat( workChar, workFloatTrans );		// 連結
-					strcat( workChar, " " );				// 連結
-					sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.y );
-					strcat( workChar, workFloatTrans );		// 連結
-					strcat( workChar, " " );				// 連結
-					sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.z );
-					strcat( workChar, workFloatTrans );		// 連結
-					strcat( workChar, "\n" );				// 連結
+		//			// 位置をワークに突っ込む
+		//			sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.x );
+		//			strcat( workChar, workFloatTrans );		// 連結
+		//			strcat( workChar, " " );				// 連結
+		//			sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.y );
+		//			strcat( workChar, workFloatTrans );		// 連結
+		//			strcat( workChar, " " );				// 連結
+		//			sprintf( workFloatTrans, "%.2f", g_aCube[ nCnt ].pos.z );
+		//			strcat( workChar, workFloatTrans );		// 連結
+		//			strcat( workChar, "\n" );				// 連結
 
-					// 書き出し
-					fputs( workChar, fp );
-				}
-			}
+		//			// 書き出し
+		//			fputs( workChar, fp );
+		//		}
+		//	}
 
-			// ファイルのクローズ
-			fclose( fp );
-		}
+		//	// ファイルのクローズ
+		//	fclose( fp );
+		//}
 
 		// 移動処理（デバッグ用）
 		if ( g_aCube[ 0 ].bUse == true )

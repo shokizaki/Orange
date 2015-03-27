@@ -430,26 +430,6 @@ void Uninit()
 // 更新処理
 void Update( void )
 {
-	//// エディット更新
-	//UpdateEdit();
-
-	//// キューブ更新
-	//UpdateCube();
-
-	//UpdateMoveCube();
-
-	//// 歯車更新
-	//UpdateGear();
-
-	//// プレイヤー更新
-	//UpdatePlayer();
-
-	//// メッシュフィールド更新
-	//UpdateMeshField();
-
-	//// カメラ更新
-	//UpdateCamera();
-
 	// モード更新
 	UpdateMode();
 
@@ -486,23 +466,6 @@ void Draw()
 	if(SUCCEEDED(g_pD3DDevice -> BeginScene()))
 	{ // 描画したいものをここに書く
 		
-		//// プレイヤー描画
-		//DrawPlayer();
-
-		//// メッシュフィールド描画
-		//DrawMeshField();
-
-		//// キューブ描画
-		//DrawCube();
-
-		//DrawMoveCube();
-
-		//// 歯車描画
-		//DrawGear();
-
-		//// エディット描画
-		//DrawEdit();
-
 		// 描画処理
 		DrawMode();
 

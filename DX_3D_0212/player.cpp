@@ -43,6 +43,8 @@ bool g_bDirect = true;		// 向き
 	
 bool g_bColorChange = false;
 
+bool g_bRed= false;
+
 //------ 内部関数宣言 ------
 
 //-----------------------------------------------
@@ -86,6 +88,8 @@ void InitPlayer( void )
 	g_bDirect = true;
 	g_bJump = false;
 	g_bColorChange = false;
+
+	g_bRed= false;
 }
 
 //-----------------------------------------------
@@ -127,6 +131,16 @@ void UpdatePlayer( void )
 		g_nCubeIndex = CUBE_MAX;
 		g_bColorChange = false;
 
+		// デバッグ（赤シート）
+		if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && g_bRed == false )
+		{
+			g_bRed = true;
+		}
+		else if ( ( GetPadElecomTrigger( PAD_6 ) == true || GetKeyboardTrigger( DIK_DOWN ) == true ) && g_bRed == true )
+		{
+			g_bRed = false;
+		}
+
 		// 重力をかける
 		fJumpVal += GRAVITY_VAL;
 		posPlayer.y -= fJumpVal;
@@ -149,19 +163,22 @@ void UpdatePlayer( void )
 			}
 		}
 
-		// 赤キューブとの当たり判定
-		for ( int i = 0; i < MOVECUBE_MAX; i++ )
+		if ( g_bRed == false )
 		{
-			if ( ( pMoveCube + i ) ->bUse == true )
+			// 赤キューブとの当たり判定
+			for ( int i = 0; i < MOVECUBE_MAX; i++ )
 			{
-				if ( ColRectXY( &rectPlayer, &( pMoveCube + i ) ->rect ) == true )
+				if ( ( pMoveCube + i ) ->bUse == true )
 				{
-					posPlayer.y = posPlayerOld.y;
-					rectPlayer.pos.y = posPlayer.y;
-					fJumpVal = 0.0f;
-					g_bJump = false;
+					if ( ColRectXY( &rectPlayer, &( pMoveCube + i ) ->rect ) == true )
+					{
+						posPlayer.y = posPlayerOld.y;
+						rectPlayer.pos.y = posPlayer.y;
+						fJumpVal = 0.0f;
+						g_bJump = false;
 
-					g_nCubeIndex = i;
+						g_nCubeIndex = i;
+					}
 				}
 			}
 		}
@@ -197,7 +214,7 @@ void UpdatePlayer( void )
 			{
 				g_bDirect = true;
 			}
-			else if ( GetGamePadCrossKeyX() > 0 )
+			else if ( GetGamePadCrossKeyX() < 0 )
 			{
 				g_bDirect = false;
 			}
@@ -235,15 +252,18 @@ void UpdatePlayer( void )
 			}
 		}
 
-		// 赤キューブとの当たり判定
-		for ( int i = 0; i < MOVECUBE_MAX; i++ )
+		if ( g_bRed == false )
 		{
-			if ( ( pMoveCube + i ) ->bUse == true )
+			// 赤キューブとの当たり判定
+			for ( int i = 0; i < MOVECUBE_MAX; i++ )
 			{
-				if ( ColRectXY( &rectPlayer, &( pMoveCube + i ) ->rect ) == true )
+				if ( ( pMoveCube + i ) ->bUse == true )
 				{
-					posPlayer.x = posPlayerOld.x;
-					rectPlayer.pos.x = posPlayer.x;
+					if ( ColRectXY( &rectPlayer, &( pMoveCube + i ) ->rect ) == true )
+					{
+						posPlayer.x = posPlayerOld.x;
+						rectPlayer.pos.x = posPlayer.x;
+					}
 				}
 			}
 		}
@@ -300,8 +320,15 @@ void UpdatePlayer( void )
 						// 現在の状態を保存
 						work = rectPlayer;
 
-						work.harfSize.x += 10.0f;
-							
+						if ( GetGamePadCrossKeyY() < 0  )
+						{
+							work.pos.y -= 10.0f;
+						}
+						else
+						{
+							work.pos.x += 10.0f;
+						}
+
 						if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
 						{
 							// 白キューブの生成
@@ -311,9 +338,9 @@ void UpdatePlayer( void )
 							( pMoveCube + i ) ->bUse = false;
 
 							g_bColorChange = true;
-						}
 
-						break;	// ループを抜ける
+							break;	// ループを抜ける
+						}
 					}
 					else
 					{
@@ -334,9 +361,9 @@ void UpdatePlayer( void )
 							( pMoveCube + i ) ->bUse = false;
 
 							g_bColorChange = true;
-						}
 
-						break;	// ループを抜ける
+							break;	// ループを抜ける
+						}						
 					}
 				}
 			}
@@ -356,7 +383,7 @@ void UpdatePlayer( void )
 							// 現在の状態を保存
 							work = rectPlayer;
 
-							work.harfSize.x += 10.0f;
+							work.pos.x += 10.0f;
 							
 							if ( ColRectXY( &work, &( pCube + i ) ->rect ) == true )
 							{
@@ -365,9 +392,9 @@ void UpdatePlayer( void )
 							
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
-							}
 
-							break;	// ループを抜ける
+								break;	// ループを抜ける
+							}
 						}
 						else
 						{
@@ -386,9 +413,9 @@ void UpdatePlayer( void )
 							
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
-							}
 
-							break;	// ループを抜ける
+								break;	// ループを抜ける
+							}
 						}
 					}
 				}
@@ -461,4 +488,10 @@ void DrawPlayer( void )
 	// マテリアルを元に戻す
 	//------------------------------------
 	pDevice ->SetMaterial( &matDef );
+}
+
+// デバッグ用
+bool GetRed( void )
+{
+	return g_bRed;
 }

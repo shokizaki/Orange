@@ -14,7 +14,7 @@
 
 //------  ƒOƒ[ƒoƒ‹•Ï”  ------
 MODE g_mode = MODE_TITLE;
-MODE g_nextMode = MODE_TITLE;
+MODE g_nextMode = MODE_GAME;
 
 //===============================================
 //

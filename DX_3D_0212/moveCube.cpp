@@ -8,6 +8,7 @@
 #include "moveCube.h"
 #include "camera.h"
 #include "gear.h"
+#include "player.h"
 
 //------ マクロ定義 ------
 #define MOVECUBE_WIDTH ( 15.0f )
@@ -41,25 +42,29 @@ void InitMoveCube( void )
 		g_aMoveCube[ i ].bUse = false;
 	}
 
-	//{
-	//	// xファイルの読み込み
-	//	//------------------------------------
-	//	D3DXLoadMeshFromX("data/MODEL/cube.x",		// 読み込むファイル名
-	//					  D3DXMESH_SYSTEMMEM,							// 
-	//					  pDevice,										// 
-	//					  NULL,											// 
-	//					  &pBuffMatModelInit,			// 
-	//					  NULL,											// 
-	//					  &numMatModelInit,			// 
-	//					  &pMeshModelInit );
-	//}
-
 	// グローバル変数の初期化
 	g_bMoveMoveCube = false;
 	g_nMoveMoveCube = 0;
 	//g_bEdit = false;
 	g_nCreateMoveCubeNum = 0;
 	g_bMoveCubeSelect = false;
+
+	// 位置読み込み
+	// ファイルの読み込み開始
+	FILE *fp = fopen( "RedCubePos.txt", "rt" );
+	char strWork[ 256 ];
+	D3DXVECTOR3 fWork;
+	while ( strcmp( strWork, "END_SCRIPT" ) != 0 )
+	{
+		// 一行読み込む
+		fscanf( fp, "%s = %f %f %f" , strWork, &fWork.x, &fWork.y, &fWork.z );
+
+		if ( strcmp( strWork, "POS" ) == 0 )
+		{
+			// 白キューブ生成
+			SetMoveCube( fWork );
+		}
+	}
 }
 
 //-----------------------------------------------
@@ -170,54 +175,57 @@ void DrawMoveCube( void )
 	// カメラのセット
 	SetCamera();
 
-	// それぞれのパーツの行列計算と描画開始
-	for (int nCnt = 0; nCnt < MOVECUBE_MAX; nCnt++)
+	if ( GetRed() == false )
 	{
-		if ( g_aMoveCube[ nCnt ].bUse == true )
+		// それぞれのパーツの行列計算と描画開始
+		for (int nCnt = 0; nCnt < MOVECUBE_MAX; nCnt++)
 		{
-			D3DXMatrixIdentity( &g_aMoveCube[ nCnt ].mtxWorld );	// フォーマットの初期化
-			D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
-			D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
-
-			// スケールを反映
-			D3DXMatrixScaling(&mtxScl, g_aMoveCube[ nCnt ].scl.x, g_aMoveCube[ nCnt ].scl.y, g_aMoveCube[ nCnt ].scl.z);
-			D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxScl);
-
-			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aMoveCube[ nCnt ].rot.y, g_aMoveCube[ nCnt ].rot.x, g_aMoveCube[ nCnt ].rot.z);
-			D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxRot);
-
-			// 位置を反映
-			D3DXMatrixTranslation(&mtxTranslate, g_aMoveCube[ nCnt ].pos.x, g_aMoveCube[ nCnt ].pos.y, g_aMoveCube[ nCnt ].pos.z);
-			D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxTranslate);
-
-			// 設定
-			pDevice ->SetTransform(D3DTS_WORLD, &g_aMoveCube[ nCnt ].mtxWorld);
-
-			// 現在のマテリアル情報を保存
-			pDevice ->GetMaterial( &matDef );
-
-			// バッファへのポインタを取得
-			pMat = (D3DXMATERIAL*)g_aMoveCube[ nCnt ].pBuffMatModel ->GetBufferPointer();
-
-			/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
-
-			strcat(strDest, strSrc);
-
-			D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
-			
-			// マテリアルの数だけループ
-			for (int nCntMat = 0; nCntMat < (int)g_aMoveCube[ nCnt ].numMatModel; nCntMat++)
+			if ( g_aMoveCube[ nCnt ].bUse == true )
 			{
-				pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
-				pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
-				g_aMoveCube[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
-			}
+				D3DXMatrixIdentity( &g_aMoveCube[ nCnt ].mtxWorld );	// フォーマットの初期化
+				D3DXMatrixIdentity( &mtxScl );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxRot );						// 行列の初期化
+				D3DXMatrixIdentity( &mtxTranslate );				// 行列の初期化
+
+				// スケールを反映
+				D3DXMatrixScaling(&mtxScl, g_aMoveCube[ nCnt ].scl.x, g_aMoveCube[ nCnt ].scl.y, g_aMoveCube[ nCnt ].scl.z);
+				D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxScl);
+
+				// 向きを反映
+				D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aMoveCube[ nCnt ].rot.y, g_aMoveCube[ nCnt ].rot.x, g_aMoveCube[ nCnt ].rot.z);
+				D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxRot);
+
+				// 位置を反映
+				D3DXMatrixTranslation(&mtxTranslate, g_aMoveCube[ nCnt ].pos.x, g_aMoveCube[ nCnt ].pos.y, g_aMoveCube[ nCnt ].pos.z);
+				D3DXMatrixMultiply(&g_aMoveCube[ nCnt ].mtxWorld, &g_aMoveCube[ nCnt ].mtxWorld, &mtxTranslate);
+
+				// 設定
+				pDevice ->SetTransform(D3DTS_WORLD, &g_aMoveCube[ nCnt ].mtxWorld);
+
+				// 現在のマテリアル情報を保存
+				pDevice ->GetMaterial( &matDef );
+
+				// バッファへのポインタを取得
+				pMat = (D3DXMATERIAL*)g_aMoveCube[ nCnt ].pBuffMatModel ->GetBufferPointer();
+
+				/*strSrc = strrchr(pMat ->pTextureFilename, '\\') + 1;
+
+				strcat(strDest, strSrc);
+
+				D3DXCreateTextureFromFile(pDevice, strDest, &g_pTextureModel[1]);*/
 			
-			// マテリアルを元に戻す
-			//------------------------------------
-			pDevice ->SetMaterial( &matDef );
+				// マテリアルの数だけループ
+				for (int nCntMat = 0; nCntMat < (int)g_aMoveCube[ nCnt ].numMatModel; nCntMat++)
+				{
+					pDevice ->SetMaterial( &pMat[ nCntMat ].MatD3D );			// マテリアルの設定
+					pDevice ->SetTexture( 0, NULL );							// テクスチャのセット
+					g_aMoveCube[ nCnt ].pMeshModel ->DrawSubset( nCntMat );		// 描画
+				}
+			
+				// マテリアルを元に戻す
+				//------------------------------------
+				pDevice ->SetMaterial( &matDef );
+			}
 		}
 	}
 }
@@ -366,7 +374,7 @@ void EditMoveCube( void )
 	}
 
 	// 赤キューブ位置の保存
-	if ( GetKeyboardTrigger( DIK_F2 ) == true )
+	if ( GetKeyboardTrigger( DIK_F5 ) == true )
 	{
 		// ファイルのオープン
 		FILE *fp = fopen( "MoveCubePositionInfo.txt", "wt" );
