@@ -12,6 +12,7 @@
 #include "input.h"
 #include "fade.h"
 #include "camera.h"
+#include "TitlePreBtn.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -34,8 +35,6 @@ typedef struct tagTITLE
 //-----------------------------------------------
 //　マクロ定義
 //-----------------------------------------------
-#define TITLE_MAX  ( 2 )			 // 頂点の数
-#define TEXTURE_MAX ( 2 )			 // 使用するテクスチャの数
 
 //-----------------------------------------------
 //  グローバル変数
@@ -110,6 +109,10 @@ void InitTitle()
 	// テクスチャの読み込み
 	//------------------------------------
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title/Title.png",	&g_Title.tex );
+
+
+    // PreBtn
+    InitTitlePreBtn();
 }
 
 //-----------------------------------------------
@@ -117,6 +120,9 @@ void InitTitle()
 //-----------------------------------------------
 void UninitTitle()
 {
+    // PreBtn
+    UninitTitlePreBtn();
+
     // BGM
 	//StopSound();
 
@@ -140,6 +146,8 @@ void UninitTitle()
 //-----------------------------------------------
 void UpdateTitle()
 {
+    UpdateTitlePreBtn();
+
 	// 遷移判定
 	if ( ( GetKeyboardTrigger(DIK_RETURN) || GetPadElecomTrigger( PAD_4 ) ) && GetFade() == FADE_NONE)
 	{
@@ -159,6 +167,8 @@ void DrawTitle()
     pDevice->SetFVF( FVF_VERTEX_2D );
     pDevice->SetTexture( 0, g_Title.tex );
     pDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 2 );
+
+    DrawTitlePreBtn();
 }
 
 //-----------------------------------------------
