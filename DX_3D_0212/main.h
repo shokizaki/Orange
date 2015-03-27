@@ -24,6 +24,9 @@
 #include "debugproc.h"
 #include "input.h"
 #include "inputPad.h"
+#include "mode.h"
+#include "fade.h"
+#include "sound.h"
 
 //===================================================================
 //

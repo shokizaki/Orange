@@ -20,6 +20,7 @@
 #define PLAYER_POS_Y ( 30.0f )
 #define PLAYER_POS_Z ( 0.0f )
 
+#define MOVE_VAL ( 3.0f )
 #define GRAVITY_VAL ( 0.5f )
 
 //------ グローバル変数 ------
@@ -28,17 +29,19 @@ LPD3DXMESH pMeshModelPlayer;			// メッシュ情報へのポインタ
 LPD3DXBUFFER pBuffMatModelPlayer;		// マテリアル情報へのポインタ
 DWORD numMatModelPlayer;				// マテリアルの数
 
-D3DXVECTOR3 posPlayer;	
-D3DXVECTOR3 posPlayerOld;	
-D3DXVECTOR3 rotPlayer;	
-D3DXVECTOR3 sclPlayer;	
-COL_RECT rectPlayer;
-float fJumpVal = 0.0f;
-int g_nCubeIndex = 0;
-int g_nRedCubeIndex = 0;
-bool g_bJump = false;
+D3DXVECTOR3 posPlayer;		// プレイヤーの位置
+D3DXVECTOR3 posPlayerOld;	// プレイヤーの前回位置	
+D3DXVECTOR3 rotPlayer;		// 角度
+D3DXVECTOR3 sclPlayer;		// スケール
+COL_RECT rectPlayer;		// 当たり判定
+float fJumpVal = 0.0f;		// ジャンプ量
+int g_nCubeIndex = 0;		// キューブのインデックス
+int g_nRedCubeIndex = 0;	// 赤キューブのインデックス
+bool g_bJump = false;		// ジャンプ中？
 
-bool g_bDirect = true;
+bool g_bDirect = true;		// 向き
+	
+bool g_bColorChange = false;
 
 //------ 内部関数宣言 ------
 
@@ -82,6 +85,7 @@ void InitPlayer( void )
 	g_nRedCubeIndex = 0;
 	g_bDirect = true;
 	g_bJump = false;
+	g_bColorChange = false;
 }
 
 //-----------------------------------------------
@@ -121,6 +125,7 @@ void UpdatePlayer( void )
 		// 前回位置を保存
 		posPlayerOld = posPlayer;
 		g_nCubeIndex = CUBE_MAX;
+		g_bColorChange = false;
 
 		// 重力をかける
 		fJumpVal += GRAVITY_VAL;
@@ -170,7 +175,7 @@ void UpdatePlayer( void )
 			g_bJump = false;
 		}
 
-		// 移動処理
+		// 移動処理（キーボード）
 		if ( GetKeyboardPress( DIK_A ) == true )
 		{
 			posPlayer.x -= 3.0f;
@@ -183,6 +188,39 @@ void UpdatePlayer( void )
 			rectPlayer.pos.x = posPlayer.x;
 			g_bDirect = true;
 		}
+
+		// ゲームパッドでの移動処理
+		if ( ( GetGamePadCrossKeyX() > 0 || GetGamePadCrossKeyY() > 0 || GetGamePadCrossKeyX() < 0 || GetGamePadCrossKeyY() < 0 ) )
+		{
+			// 向いてる向きの設定（当たり判定用）
+			if ( GetGamePadCrossKeyX() > 0 )
+			{
+				g_bDirect = true;
+			}
+			else if ( GetGamePadCrossKeyX() > 0 )
+			{
+				g_bDirect = false;
+			}
+
+			// モーション変更
+
+			// 移動処理
+			posPlayer.x += GetGamePadCrossKeyX() * MOVE_VAL;
+			rectPlayer.pos.x = posPlayer.x;
+
+			// 向きの目標値を設定
+
+		}
+		/*else
+		{
+			if ( g_playerInfo.bMotion == false )
+			{
+				g_playerInfo.bMove = false;
+				g_playerInfo.status = NEUTRAL;
+				g_playerInfo.direction = DIRECTION_MAX;
+				PrintDebugProc("DIRECTION_MAX\n");
+			}
+		}*/
 
 		// キューブとの当たり判定
 		for ( int i = 0; i < CUBE_MAX; i++ )
@@ -210,164 +248,8 @@ void UpdatePlayer( void )
 			}
 		}
 
-		// 赤キューブを取る処理
-		if ( GetKeyboardTrigger( DIK_RETURN ) == true )
-		{
-			if ( g_nRedCubeIndex == 0 )
-			{
-				// 赤キューブとの当たり判定
-				for ( int i = 0; i < MOVECUBE_MAX; i++ )
-				{
-					if ( ( pMoveCube + i ) ->bUse == true )
-					{
-						if ( g_bDirect == true )
-						{
-							// 作業用変数
-							COL_RECT work;
-
-							// 現在の状態を保存
-							work = rectPlayer;
-
-							work.harfSize.x += 10.0f;
-							
-							if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
-							{
-								g_nRedCubeIndex = 1;
-								( pMoveCube + i ) ->bUse = false;
-							}
-
-							break;	// ループを抜ける
-						}
-						else
-						{
-							// 作業用変数
-							COL_RECT work;
-
-							// 現在の状態を保存
-							work = rectPlayer;
-
-							work.pos.x -= 10.0f;
-							
-							if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
-							{
-								g_nRedCubeIndex = 1;
-								( pMoveCube + i ) ->bUse = false;
-							}
-
-							break;	// ループを抜ける
-						}
-					}
-				}
-			}
-		}
-
-		// 赤キューブの生成
-		// 横に生成
-		if ( GetKeyboardTrigger( DIK_P ) == true && GetKeyboardPress( DIK_S ) == false )
-		{
-			// キューブを所持していたら
-			if ( g_nRedCubeIndex == 1 )
-			{
-				// 右向きの場合
-				if ( g_bDirect == true )
-				{
-					if ( ( (int)( posPlayer.x + 40.0f ) % 40 ) != 0 )
-					{
-						// 作業用変数
-						int nWorkX = ( (int)( posPlayer.x + 40.0f ) / 40 );
-						
-						// 生成する場所を計算
-						if ( ( (int)( posPlayer.x + 40.0f ) % 40 ) < 10 )
-						{
-							nWorkX = nWorkX - 1;
-						}
-						int nWorkY = ( (int)( posPlayer.y + 30.0f ) / 40 );
-
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( 40.0f + 40.0f * nWorkX, 40.0f * nWorkY, posPlayer.z ) );
-					}
-					else
-					{
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( posPlayer.x + 40.0f, posPlayer.y, posPlayer.z ) );
-					}
-				}
-
-				// 左向きの場合
-				else
-				{
-					if ( ( (int)( posPlayer.x - 40.0f ) % 40 ) != 0 )
-					{
-						// 生成する場所を計算
-						int nWorkX = ( (int)( posPlayer.x - 40.0f ) / 40 );
-						if ( ( (int)( posPlayer.x - 40.0f ) % 40 ) > -10 )
-						{
-							nWorkX = nWorkX + 1;
-						}
-						int nWorkY = ( (int)( posPlayer.y + 30.0f ) / 40 );
-
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( -40.0f + 40.0f * nWorkX, 40.0f * nWorkY, posPlayer.z ) );
-					}
-					else
-					{
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( posPlayer.x - 40.0f, posPlayer.y, posPlayer.z ) );
-					}
-				}
-
-				// 所持フラグを折る
-				g_nRedCubeIndex = 0;
-			}
-		}
-
-		// 斜め下に生成
-		else if ( GetKeyboardTrigger( DIK_P ) == true && GetKeyboardPress( DIK_S ) == true )
-		{
-			// 所持していたら
-			if ( g_nRedCubeIndex == 1 )
-			{
-				// 右向きの場合
-				if ( g_bDirect == true )
-				{
-					{
-						// 生成する場所を計算
-						int nWorkX = ( (int)( posPlayer.x + 40.0f ) / 40 );
-						if ( ( (int)( posPlayer.x + 40.0f ) % 40 ) < 10 )
-						{
-							nWorkX = nWorkX - 1;
-						}
-						int nWorkY = ( (int)( posPlayer.y + 30.0f ) / 40 );
-
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( 40.0f + 40.0f * nWorkX, 40.0f * ( nWorkY - 1 ), posPlayer.z ) );
-					}
-				}
-
-				// 左向きの場合
-				else
-				{
-					{
-						// 生成する場所を計算
-						int nWorkX = ( (int)( posPlayer.x - 40.0f ) / 40 );
-						if ( ( (int)( posPlayer.x - 40.0f ) % 40 ) > -10 )
-						{
-							nWorkX = nWorkX + 1;
-						}
-						int nWorkY = ( (int)( posPlayer.y + 30.0f ) / 40 );
-
-						// 赤キューブの生成
-						SetMoveCube( D3DXVECTOR3( -40.0f + 40.0f * nWorkX, 40.0f * ( nWorkY - 1 ), posPlayer.z ) );
-					}
-				}
-
-				// 所持フラグを折る
-				g_nRedCubeIndex = 0;
-			}
-		}
-
 		// ジャンプ処理
-		if ( GetKeyboardTrigger( DIK_SPACE ) == true && g_bJump == false )
+		if ( ( GetKeyboardTrigger( DIK_SPACE ) == true || GetPadElecomTrigger( PAD_3 ) ) && g_bJump == false )
 		{
 			fJumpVal -= 8.0f;
 			g_bJump = true;
@@ -396,6 +278,117 @@ void UpdatePlayer( void )
 						else
 						{
 							SetGearRotation( i, false );
+						}
+					}
+				}
+			}
+		}
+
+		// 色を変える処理
+		if ( GetPadElecomTrigger( PAD_4 ) == true || GetKeyboardTrigger( DIK_RETURN ) == true )
+		{
+			// 赤キューブとの当たり判定
+			for ( int i = 0; i < MOVECUBE_MAX; i++ )
+			{
+				if ( ( pMoveCube + i ) ->bUse == true )
+				{
+					if ( g_bDirect == true )
+					{
+						// 作業用変数
+						COL_RECT work;
+
+						// 現在の状態を保存
+						work = rectPlayer;
+
+						work.harfSize.x += 10.0f;
+							
+						if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
+						{
+							// 白キューブの生成
+							SetCube( ( pMoveCube + i ) ->pos );
+							
+							// 赤キューブをなくす
+							( pMoveCube + i ) ->bUse = false;
+
+							g_bColorChange = true;
+						}
+
+						break;	// ループを抜ける
+					}
+					else
+					{
+						// 作業用変数
+						COL_RECT work;
+
+						// 現在の状態を保存
+						work = rectPlayer;
+
+						work.pos.x -= 10.0f;
+							
+						if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
+						{
+							// 白キューブの生成
+							SetCube( ( pMoveCube + i ) ->pos );
+							
+							// 赤キューブをなくす
+							( pMoveCube + i ) ->bUse = false;
+
+							g_bColorChange = true;
+						}
+
+						break;	// ループを抜ける
+					}
+				}
+			}
+
+			if ( g_bColorChange == false )
+			{
+				// 白キューブとの当たり判定
+				for ( int i = 0; i < CUBE_MAX; i++ )
+				{
+					if ( ( pCube + i ) ->bUse == true )
+					{
+						if ( g_bDirect == true )
+						{
+							// 作業用変数
+							COL_RECT work;
+
+							// 現在の状態を保存
+							work = rectPlayer;
+
+							work.harfSize.x += 10.0f;
+							
+							if ( ColRectXY( &work, &( pCube + i ) ->rect ) == true )
+							{
+								// 赤キューブの生成
+								SetMoveCube( ( pCube + i ) ->pos );
+							
+								// 白キューブをなくす
+								( pCube + i ) ->bUse = false;
+							}
+
+							break;	// ループを抜ける
+						}
+						else
+						{
+							// 作業用変数
+							COL_RECT work;
+
+							// 現在の状態を保存
+							work = rectPlayer;
+
+							work.pos.x -= 10.0f;
+							
+							if ( ColRectXY( &work, &( pCube + i ) ->rect ) == true )
+							{
+								// 赤キューブの生成
+								SetMoveCube( ( pCube + i ) ->pos );
+							
+								// 白キューブをなくす
+								( pCube + i ) ->bUse = false;
+							}
+
+							break;	// ループを抜ける
 						}
 					}
 				}

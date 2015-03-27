@@ -366,27 +366,25 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//			   "terminal",
 	//			   &g_pD3DFont);
 
+	// 音楽初期化
+	InitSound( hWnd );
+
 	// 入力処理初期化処理
 	//------------------------------------
 	InitKeyboard( hInstance, hWnd );
+
+	// ゲームパッド初期化
+	InitGamePad( hInstance, hWnd );
 
 	// デバッグ初期化処理
 	//------------------------------------
 	InitDebugProc();
 
-	InitCube();
+	// フェード初期化
+	InitFade();
 
-	InitMoveCube();
-
-	InitGear();
-
-	InitCamera();
-
-	InitPlayer();
-
-	InitMeshField( 5, 5, 200.0f, 200.0f );
-
-	InitLight();
+	// モード遷移
+	ChangeScene();
 
 	return S_OK;
 }
@@ -419,52 +417,57 @@ void Uninit()
 	//------------------------------------
 	UninitKeyboard();
 
-	// 終了処理
-	//------------------------------------
-	UninitCube();
+	// ゲームパッド終了
+	UninitGamePad();
 
-	UninitMoveCube();
+	// モード終了処理
+	UninitMode();
 
-	UninitGear();
-
-	UninitDebugProc();
-
-	UninitCamera();
-
-	UninitPlayer();
-
-	UninitLight();
+	// 音楽終了
+	UninitSound();
 }
 
 // 更新処理
 void Update( void )
 {
-	// エディット更新
-	UpdateEdit();
+	//// エディット更新
+	//UpdateEdit();
 
-	// キューブ更新
-	UpdateCube();
+	//// キューブ更新
+	//UpdateCube();
 
-	UpdateMoveCube();
+	//UpdateMoveCube();
 
-	// 歯車更新
-	UpdateGear();
+	//// 歯車更新
+	//UpdateGear();
 
-	// プレイヤー更新
-	UpdatePlayer();
+	//// プレイヤー更新
+	//UpdatePlayer();
 
-	// メッシュフィールド更新
-	UpdateMeshField();
+	//// メッシュフィールド更新
+	//UpdateMeshField();
+
+	//// カメラ更新
+	//UpdateCamera();
+
+	// モード更新
+	UpdateMode();
 
 	// 入力処理の更新
 	//------------------------------------
 	UpdateKeyboard();
 
+	// ゲームパッド更新
+	UpdateGamePad();
+
+	// フェード更新
+	UpdateFade();
+
 	// デバッグ描画更新処理
 	//------------------------------------
 	UpdateDebugProc();
 
-	UpdateCamera();
+	
 }
 
 void Draw()
@@ -483,22 +486,28 @@ void Draw()
 	if(SUCCEEDED(g_pD3DDevice -> BeginScene()))
 	{ // 描画したいものをここに書く
 		
-		// プレイヤー描画
-		DrawPlayer();
+		//// プレイヤー描画
+		//DrawPlayer();
 
-		// メッシュフィールド描画
-		DrawMeshField();
+		//// メッシュフィールド描画
+		//DrawMeshField();
 
-		// キューブ描画
-		DrawCube();
+		//// キューブ描画
+		//DrawCube();
 
-		DrawMoveCube();
+		//DrawMoveCube();
 
-		// 歯車描画
-		DrawGear();
+		//// 歯車描画
+		//DrawGear();
 
-		// エディット描画
-		DrawEdit();
+		//// エディット描画
+		//DrawEdit();
+
+		// 描画処理
+		DrawMode();
+
+		// フェード描画
+		DrawFade();
 
 		// FPS表示関数
 		//------------------------------------
