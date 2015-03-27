@@ -75,6 +75,8 @@ void InitGoal( void )
 
 		if ( strcmp( strWork, "POS" ) == 0 )
 		{
+			fWork.y += 20.0f;
+
 			// 白キューブ生成
 			SetGoal( fWork );
 		}
@@ -257,14 +259,16 @@ int SetGoal( D3DXVECTOR3 pos )
 		if ( g_aGoal[ i ].bUse == false )
 		{
 			// 位置の設定
-			g_aGoal[ i ].pos = pos;
+			g_aGoal[ i ].pos.x = pos.x;
+			g_aGoal[ i ].pos.y = pos.y - 20.0f;
+			g_aGoal[ i ].pos.z = pos.z;
 			g_aGoal[ i ].rot = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 			g_aGoal[ i ].scl = D3DXVECTOR3( 1.0f, 1.0f, 1.0f );
 
 			g_aGoal[ i ].move = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
 			// 当たり判定用
-			g_aGoal[ i ].rect.pos = pos;
+			g_aGoal[ i ].rect.pos = g_aGoal[ i ].pos;
 			g_aGoal[ i ].rect.harfSize = D3DXVECTOR3( GOAL_WIDTH, GOAL_HEIGHT, GOAL_HEIGHT );
 
 			// モデル情報をコピー

@@ -14,6 +14,7 @@
 #include "moveCube.h"
 #include "billboard.h"
 #include "sheet.h"
+#include "goal.h"
 
 //------ マクロ定義 ------
 #define PLAYER_WIDTH ( 20.0f )
@@ -142,6 +143,7 @@ void UpdatePlayer( void )
 	CUBE *pCube = GetCube();
 	GEAR *pGear = GetGear();
 	MOVECUBE *pMoveCube = GetMoveCube();
+	GOAL *pGoal = GetGoal();
 
 	if ( GetEdit() == false )
 	{
@@ -378,7 +380,7 @@ void UpdatePlayer( void )
 
 								g_bColorChange = true;
 
-								break;	// ループを抜ける
+								//break;	// ループを抜ける
 							}
 						}
 						else
@@ -395,7 +397,7 @@ void UpdatePlayer( void )
 							}
 							else
 							{
-								work.pos.x += 10.0f;
+								work.pos.x -= 10.0f;
 							}
 							
 							if ( ColRectXY( &work, &( pMoveCube + i ) ->rect ) == true )
@@ -410,7 +412,7 @@ void UpdatePlayer( void )
 
 								g_bColorChange = true;
 
-								break;	// ループを抜ける
+								//break;	// ループを抜ける
 							}						
 						}
 					}
@@ -451,7 +453,7 @@ void UpdatePlayer( void )
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
 
-								break;	// ループを抜ける
+								//break;	// ループを抜ける
 							}
 						}
 						else
@@ -481,10 +483,22 @@ void UpdatePlayer( void )
 								// 白キューブをなくす
 								( pCube + i ) ->bUse = false;
 
-								break;	// ループを抜ける
+								//break;	// ループを抜ける
 							}
 						}
 					}
+				}
+			}
+		}
+
+		for ( int i = 0; i < GOAL_MAX; i++ )
+		{
+			if ( ( pGoal + i ) ->bUse == true )
+			{
+				if ( ColRectXY( &rectPlayer, &( pGoal + i ) ->rect ) == true )
+				{
+					SetFade( FADE_OUT, 60 );
+					SetMode( MODE_RESULT );
 				}
 			}
 		}

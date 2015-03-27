@@ -99,14 +99,14 @@ void UpdateCamera(void)
 	else
 	{
 		// ù‰ñ
-		if (GetKeyboardPress(DIK_Q))
+		/*if (GetKeyboardPress(DIK_Q))
 		{
 			g_camera.rotCamera.y += 0.05f;
 		}
 		if (GetKeyboardPress(DIK_E))
 		{
 			g_camera.rotCamera.y -= 0.05f;
-		}
+		}*/
 
 		// ’‹“_ˆÚ“®
 		// ãˆÚ“®

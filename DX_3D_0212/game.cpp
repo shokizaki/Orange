@@ -23,6 +23,7 @@
 #include "sheet.h"
 #include "background.h"
 #include "timer.h"
+#include "goal.h"
 
 //-----------------------------------------------
 //　マクロ定義
@@ -63,6 +64,8 @@ void InitGame()
 
 	// 歯車初期化
 	InitGear();
+
+	InitGoal();
 
 	// カメラ初期化
 	InitCamera();
@@ -118,6 +121,8 @@ void UninitGame()
 
 	// 歯車初終了
 	UninitGear();
+
+	UninitGoal();
 
 	// ポーズ終了
 	UninitPause();
@@ -195,6 +200,8 @@ void UpdateGame()
 	// シート更新
 	UpdateSheet();
 
+	UpdateGoal();
+
 	// 背景初期化
 	UpdateBackGround();
 
@@ -231,9 +238,11 @@ void DrawGame()
 	// 歯車描画
 	DrawGear();
 
+	DrawGoal();
+
 	// メッシュフィールド描画処理
 	//------------------------------------
-	DrawMeshField();
+	//DrawMeshField();
 
 	// ライトの描画
 	//------------------------------------
